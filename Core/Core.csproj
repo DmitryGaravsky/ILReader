@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2FDE2DC0-F1DC-4090-84CD-58C0204CC63D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ILReader</RootNamespace>
+    <AssemblyName>ILReader.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="OperandReaderContext\IOperandReaderContext.cs" />
+    <Compile Include="OperandReaderContext\ReaderContext.cs" />
+    <Compile Include="OperandReader\Readers\16bit\InlineVar.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineMethod.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineSig.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineString.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineSwitch.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineTok.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineType.cs" />
+    <Compile Include="OperandReader\Readers\32bit\ShortInlineR.cs" />
+    <Compile Include="OperandReader\Readers\64bit\InlineI8.cs" />
+    <Compile Include="OperandReader\Readers\64bit\InlineR.cs" />
+    <Compile Include="OperandReader\Readers\8bit\ShortInlineBrTarget.cs" />
+    <Compile Include="OperandReader\Readers\8bit\ShortInlineI.cs" />
+    <Compile Include="OperandReader\Readers\8bit\ShortInlineVar.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BinaryReader\BinaryReader.cs" />
+    <Compile Include="BinaryReader\IBinaryReader.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineBrTarget.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineField.cs" />
+    <Compile Include="OperandReader\IOperandReader.cs" />
+    <Compile Include="OpCodeReader\OpCodeReader.cs" />
+    <Compile Include="OperandReader\OperandReader.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineI.cs" />
+    <Compile Include="OperandReader\Readers\InlineNone.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
