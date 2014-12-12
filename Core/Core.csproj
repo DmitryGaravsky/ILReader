@@ -81,6 +81,7 @@
     <Compile Include="OperandReaderContext\ReaderContext.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
+    <Compile Include="Tests\BinaryReader.cs"/>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
