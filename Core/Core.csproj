@@ -32,6 +32,16 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugTest\</OutputPath>
+    <DefineConstants>DEBUG;DEBUGTEST;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -40,9 +50,14 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
+    <Reference Include="nunit.framework" />
+  </ItemGroup>
   <ItemGroup>
-    <Compile Include="OperandReaderContext\IOperandReaderContext.cs" />
-    <Compile Include="OperandReaderContext\ReaderContext.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BinaryReader\BinaryReader.cs" />
+    <Compile Include="BinaryReader\IBinaryReader.cs" />
+    <Compile Include="OpCodeReader\OpCodeReader.cs" />
     <Compile Include="OperandReader\Readers\16bit\InlineVar.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineMethod.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineSig.cs" />
@@ -56,18 +71,18 @@
     <Compile Include="OperandReader\Readers\8bit\ShortInlineBrTarget.cs" />
     <Compile Include="OperandReader\Readers\8bit\ShortInlineI.cs" />
     <Compile Include="OperandReader\Readers\8bit\ShortInlineVar.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BinaryReader\BinaryReader.cs" />
-    <Compile Include="BinaryReader\IBinaryReader.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineBrTarget.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineField.cs" />
-    <Compile Include="OperandReader\IOperandReader.cs" />
-    <Compile Include="OpCodeReader\OpCodeReader.cs" />
-    <Compile Include="OperandReader\OperandReader.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineI.cs" />
     <Compile Include="OperandReader\Readers\InlineNone.cs" />
+    <Compile Include="OperandReader\IOperandReader.cs" />
+    <Compile Include="OperandReader\OperandReader.cs" />
+    <Compile Include="OperandReaderContext\IOperandReaderContext.cs" />
+    <Compile Include="OperandReaderContext\ReaderContext.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
