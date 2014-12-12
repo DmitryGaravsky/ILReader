@@ -15,19 +15,24 @@
             return bytes[ptr++] != 0;
         }
         short IBinaryReader.ReadShort() {
-            return (short)(bytes[ptr++] | bytes[ptr++] << 8);
+            ptr += 2;
+            return System.BitConverter.ToInt16(bytes, ptr - 2);
         }
         int IBinaryReader.ReadInt() {
-            return ((bytes[ptr++] | (bytes[ptr++] << 8)) | (bytes[ptr++] << 0x10)) | (bytes[ptr++] << 0x18);
+            ptr += 4;
+            return System.BitConverter.ToInt32(bytes, ptr - 4);
         }
         float IBinaryReader.ReadFloat() {
-            return ((bytes[ptr++] | (bytes[ptr++] << 8)) | (bytes[ptr++] << 0x10)) | (bytes[ptr++] << 0x18); // TODO
+            ptr += 4;
+            return System.BitConverter.ToSingle(bytes, ptr - 4);
         }
         long IBinaryReader.ReadLong() {
-            return ((bytes[ptr++] | (bytes[ptr++] << 8)) | (bytes[ptr++] << 0x10)) | (bytes[ptr++] << 0x18); // TODO
+            ptr += 8;
+            return System.BitConverter.ToInt64(bytes, ptr - 8);
         }
         double IBinaryReader.ReadDouble() {
-            return ((bytes[ptr++] | (bytes[ptr++] << 8)) | (bytes[ptr++] << 0x10)) | (bytes[ptr++] << 0x18); // TODO
+            ptr += 8;
+            return System.BitConverter.ToDouble(bytes, ptr - 8);
         }
         int IBinaryReader.Offset {
             get { return ptr; }
