@@ -54,6 +54,13 @@
     <Reference Include="nunit.framework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ILReader\IILReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILReader\IILReaderFactory.cs" />
+    <Compile Include="ILReader\ILReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BinaryReader\BinaryReader.cs" />
     <Compile Include="BinaryReader\IBinaryReader.cs" />
@@ -81,7 +88,8 @@
     <Compile Include="OperandReaderContext\ReaderContext.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
-    <Compile Include="Tests\BinaryReader.cs"/>
+    <Compile Include="Tests\BinaryReader.cs" />
+    <Compile Include="Tests\ILReader.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

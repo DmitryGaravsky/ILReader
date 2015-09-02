@@ -1,7 +1,6 @@
 ﻿namespace ILReader.Readers {
     using System.Collections.Generic;
     using System.Reflection.Emit;
-    using ILReader.Context;
 
     static class OperandReader {
         static IDictionary<OperandType, IOperandReader> cache = new Dictionary<OperandType, IOperandReader>();
@@ -28,7 +27,7 @@
             cache.Add(OperandType.InlineI8, new InlineI8OperandReader());
             cache.Add(OperandType.InlineR, new InlineROperandReader());
         }
-        public static object Read(IBinaryReader binaryReader, IOperandReaderContext context, OperandType operandType) {
+        public static object Read(IBinaryReader binaryReader, Context.IOperandReaderContext context, OperandType operandType) {
             IOperandReader reader;
             if(cache.TryGetValue(operandType, out reader))
                 return reader.Read(binaryReader, context);
