@@ -65,6 +65,7 @@
             }
             protected override IEnumerable<IInstruction> GetInstructions(IBinaryReader binaryReader, Context.IOperandReaderContext context) {
                 yield break;
-            }        }
+            }
+        }
     }
 }

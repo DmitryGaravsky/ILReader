@@ -85,7 +85,7 @@
     <Compile Include="OperandReader\IOperandReader.cs" />
     <Compile Include="OperandReader\OperandReader.cs" />
     <Compile Include="OperandReaderContext\IOperandReaderContext.cs" />
-    <Compile Include="OperandReaderContext\ReaderContext.cs" />
+    <Compile Include="OperandReaderContext\OperandReaderContext.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
     <Compile Include="Tests\BinaryReader.cs" />
