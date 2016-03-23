@@ -1,6 +1,7 @@
 ﻿namespace ILReader.Readers {
-    interface IBinaryReader {
+    public interface IBinaryReader {
         bool CanRead();
+        //
         byte ReadByte();
         bool ReadBoolean();
         short ReadShort();
@@ -8,6 +9,7 @@
         float ReadFloat();
         long ReadLong();
         double ReadDouble();
+        //
         int Offset { get; }
     }
 }

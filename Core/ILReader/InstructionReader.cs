@@ -52,11 +52,15 @@
             public int Offset { get; private set; }
             public OpCode OpCode { get; private set; }
             public object Operand { get; private set; }
+            //
+            public string Text {
+                get { return ToString(); }
+            }
             public override string ToString() {
                 if(object.ReferenceEquals(Operand, null))
-                    return string.Format("{0:X5}:  {1}", Offset, OpCode);
+                    return string.Format("{0:X5}:  {1}", Offset, OpCode.ToString());
                 else
-                    return string.Format("{0:X5}:  {1} {2}", Offset, OpCode, Operand);
+                    return string.Format("{0:X5}:  {1} {2}", Offset, OpCode.ToString(), Operand.ToString());
             }
         }
         sealed class InstructionReaderEmpty : InstructionReader {

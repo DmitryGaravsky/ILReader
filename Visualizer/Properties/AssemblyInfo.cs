@@ -1,18 +1,26 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.DebuggerVisualizers;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ILReader")]
-[assembly: AssemblyDescription("ILReader Core Functionality")]
+[assembly: AssemblyTitle("ILReader Visualizer")]
+[assembly: AssemblyDescription("Method and Delegate Visualizer")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ILReader")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+//
+[assembly: System.Diagnostics.DebuggerVisualizer(
+    typeof(ILReader.MethodVisualizer.DebuggerSide), typeof(VisualizerObjectSource),
+    Target = typeof(System.Reflection.MethodBase), Description = "Method Visualizer")]
+[assembly: System.Diagnostics.DebuggerVisualizer(
+    typeof(ILReader.DelegateVisualizer.DebuggerSide), typeof(VisualizerObjectSource),
+    Target = typeof(System.Delegate), Description = "Delegate Visualizer")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -20,7 +28,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("97ab9619-c263-4ff8-a92f-89da0bfa8ccc")]
+[assembly: Guid("e301918c-5f1b-4581-8c2b-022cebee25a6")]
 
 // Version information for an assembly consists of the following four values:
 //

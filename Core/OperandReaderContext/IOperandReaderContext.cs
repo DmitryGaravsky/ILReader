@@ -2,7 +2,7 @@
     using System;
     using System.Reflection;
 
-    interface IOperandReaderContext {
+    public interface IOperandReaderContext {
         LocalVariableInfo this[byte variableIndex] { get; }
         LocalVariableInfo this[short variableIndex] { get; }
         FieldInfo ResolveField(int metadataToken);

@@ -11,7 +11,7 @@
             module = method.Module;
             variables = methodBody.LocalVariables.ToArray();
             methodArguments = method.IsGenericMethod ? method.GetGenericArguments() : null;
-            typeArguments = method.DeclaringType.IsGenericType ? method.DeclaringType.GetGenericArguments() : null;
+            typeArguments = (method.DeclaringType != null) && method.DeclaringType.IsGenericType ? method.DeclaringType.GetGenericArguments() : null;
         }
         readonly Module module;
         readonly LocalVariableInfo[] variables;
