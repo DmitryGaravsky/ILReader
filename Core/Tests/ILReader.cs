@@ -9,7 +9,7 @@ namespace ILReader.Tests {
 
     [TestFixture]
     public class ILReader_Tests {
-        IILReaderConfiguration cfg = Configuration.Standard;
+        IILReaderConfiguration cfg = StandardConfiguration.Default;
         #region Test Classes
         Action<Foo, Action> subscribe = (foo, execute) => foo.Click += (s, e) => execute();
         class Foo {
@@ -18,29 +18,33 @@ namespace ILReader.Tests {
                 remove { }
             }
         }
+        class FooBar {
+            int val = 42;
+            public int Sum(int a, int b, int c, int d, int e) {
+                return val + a + b + c + d + e;
+            }
+        }
         #endregion Test Classes
         [Test]
         public void Test_ReadInstructions() {
             var reader = cfg.GetReader(subscribe.Method);
             Assert.AreEqual(12, reader.Count());
             Assert.AreEqual(OpCodes.Newobj, reader.First().OpCode);
-            Assert.AreEqual(OpCodes.Ret, reader[reader.First(), 11].OpCode);
-            Assert.AreEqual(OpCodes.Nop, reader[reader.Last(), -1].OpCode);
-            //
-            var newDelegate = reader[8];
-            Assert.AreEqual(newDelegate,
-                reader.FindPrev(null, i => i.OpCode == OpCodes.Newobj));
-            Assert.AreEqual(
-                reader.FindNext(null, i => i.OpCode == OpCodes.Ldftn),
-                reader.FindPrev(null, i => i.OpCode == OpCodes.Ldftn));
-            //
-            var ldftn = reader.FindPrev(newDelegate, i => i.OpCode == OpCodes.Ldftn);
-            Assert.IsNotNull(ldftn);
-            Assert.AreEqual(ldftn.Index, newDelegate.Index - 1);
-            //
-            var callVirt = reader.FindNext(newDelegate, i => i.OpCode == OpCodes.Callvirt);
-            Assert.IsNotNull(newDelegate);
-            Assert.AreEqual(callVirt.Index, newDelegate.Index + 1);
+        }
+        [Test]
+        public void Test_ReadMetadata() {
+            var reader = cfg.GetReader(typeof(FooBar).GetMethod("Sum"));
+            Assert.AreEqual(17, reader.Count());
+            var args = reader.Metadata.First();
+            Assert.IsTrue(args.HasChildren);
+            Assert.AreEqual(5, args.Children.Count());
+            var codeSize = reader.Metadata.ElementAt(1);
+            Assert.AreEqual(24, codeSize.Value);
+            var maxStackSize = reader.Metadata.ElementAt(2);
+            Assert.AreEqual(2, maxStackSize.Value);
+            var locals = reader.Metadata.ElementAt(3);
+            Assert.IsTrue(locals.HasChildren);
+            Assert.AreEqual(1, locals.Children.Count());
         }
         [Test]
         public void Test_ReadInstructions_Stress() {
@@ -52,13 +56,49 @@ namespace ILReader.Tests {
                         var reader = cfg.GetReader(subscribe.Method);
                         var results = reader.ToArray();
                         if(results.Length == 0) {
-                            Assert.IsTrue(methods[m].IsAbstract ||
-                               ((methods[m].GetMethodImplementationFlags() & MethodImplAttributes.InternalCall) == MethodImplAttributes.InternalCall));
+                            Assert.IsTrue(methods[m].IsAbstract || ((methods[m].GetMethodImplementationFlags() & MethodImplAttributes.InternalCall) == MethodImplAttributes.InternalCall));
                         }
                     }
                 }
             }
             catch { Assert.Fail(); }
+        }
+        [Test]
+        public void Test_ReadInstructions_External() {
+            var m = typeof(object).GetMethod("GetType");
+            var reader = cfg.GetReader(m);
+            Assert.AreEqual(0, reader.Count());
+        }
+    }
+    [TestFixture]
+    public class ILReader_Tests_DynamicMethod {
+        static DynamicMethod method;
+        static Func<int> Sum;
+        [SetUp]
+        public void SetUp() {
+            if(method == null) {
+                method = new DynamicMethod("Sum", typeof(int), null);
+                var ilGen = method.GetILGenerator();
+                ilGen.Emit(OpCodes.Ldc_I4, 2);
+                ilGen.Emit(OpCodes.Ldc_I4, 2);
+                ilGen.Emit(OpCodes.Add);
+                ilGen.Emit(OpCodes.Ret);
+                Sum = method.CreateDelegate(typeof(Func<int>)) as Func<int>;
+            }
+        }
+        [Test]
+        public void Test_ReadInstructions() {
+            IILReaderConfiguration cfg = Configuration.Resolve(method);
+            Assert.IsTrue(cfg is DynamicMethodConfiguration);
+            var reader = cfg.GetReader(method);
+            Assert.AreEqual(4, reader.Count());
+        }
+        [Test]
+        public void Test_ReadInstructions_RTDynamicMethod() {
+            IILReaderConfiguration cfg = Configuration.Resolve(Sum.Method);
+            Assert.IsTrue(cfg is RTDynamicMethodConfiguration);
+            var reader = cfg.GetReader(Sum.Method);
+            Assert.AreEqual(4, reader.Count());
         }
     }
 }

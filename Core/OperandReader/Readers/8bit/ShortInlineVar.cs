@@ -5,4 +5,9 @@
             return context[reader.ReadByte()];
         }
     }
+    sealed class ShortInlineVarArgReader : IOperandReader {
+        object IOperandReader.Read(IBinaryReader reader, Context.IOperandReaderContext context) {
+            return reader.ReadByte();
+        }
+    }
 }

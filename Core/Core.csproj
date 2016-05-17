@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -38,32 +40,38 @@
     <DefineConstants>DEBUG;DEBUGTEST;TRACE</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FastAccessors">
+      <HintPath>..\Libs\FastAccessors.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
     <Reference Include="nunit.framework" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Dump\InstructionReaderDump.cs" />
+    <Compile Include="Dump\ISupportDump.cs" />
     <Compile Include="Configuration\IILReaderConfiguration.cs" />
-    <Compile Include="ILReader\IILReader.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="SignatureReader\MetadataItem.cs" />
+    <Compile Include="SignatureReader\SignatureReader.cs" />
+    <Compile Include="Tests\LocalSignatureReader.cs" />
+    <Compile Include="Utils\Dump\DumpHelper.cs" />
+    <Compile Include="Dump\ILReaderDump.cs" />
+    <Compile Include="ILReader\IILReader.cs" />
     <Compile Include="ILReader\IILReaderFactory.cs" />
-    <Compile Include="ILReader\InstructionReader.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ILReader\MethodBaseILReaderFactory.cs" />
+    <Compile Include="ILReader\InstructionReader.cs" />
+    <Compile Include="ILReader\ILReaderFactory.cs" />
+    <Compile Include="Utils\LazyRef.cs" />
+    <Compile Include="OperandReaderContext\OperandReaderContext_Real.cs" />
+    <Compile Include="OperandReaderContext\OperandReaderContext_Dump.cs" />
+    <Compile Include="OperandReaderContext\OperandReaderContext_DynamicMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BinaryReader\BinaryReader.cs" />
     <Compile Include="BinaryReader\IBinaryReader.cs" />
@@ -89,6 +97,8 @@
     <Compile Include="OperandReader\OperandReader.cs" />
     <Compile Include="OperandReaderContext\IOperandReaderContext.cs" />
     <Compile Include="OperandReaderContext\OperandReaderContext.cs" />
+    <Compile Include="Utils\Monads\MayBe.cs" />
+    <Compile Include="Utils\RuntimeTypes\RTTypes.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
     <Compile Include="Tests\BinaryReader.cs" />

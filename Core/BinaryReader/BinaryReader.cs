@@ -1,7 +1,6 @@
 ﻿namespace ILReader.Readers {
     sealed class BinaryReader : IBinaryReader {
-        readonly byte[] bytes;
-        int ptr;
+        readonly byte[] bytes; int ptr;
         public BinaryReader(byte[] bytes) {
             this.bytes = bytes;
         }
@@ -34,8 +33,18 @@
             ptr += 8;
             return System.BitConverter.ToDouble(bytes, ptr - 8);
         }
+        //
         int IBinaryReader.Offset {
             get { return ptr; }
+        }
+        byte IBinaryReader.Current {
+            get { return bytes[ptr]; }
+        }
+        //
+        byte[] IBinaryReader.Read(int offset, int size) {
+            byte[] result = new byte[size];
+            System.Array.Copy(bytes, offset, result, 0, size);
+            return result;
         }
     }
 }

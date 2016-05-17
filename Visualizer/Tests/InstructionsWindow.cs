@@ -7,8 +7,9 @@ namespace ILReader.Visualizer.Tests {
     public class InstructionsWindowTests {
         [Test, Explicit]
         public void Show() {
-            var cfg = Configuration.Standard;
-            var reader = cfg.GetReader(typeof(InstructionsWindowTests).GetMethod("Show"));
+            var m = typeof(InstructionsWindowTests).GetMethod("Show");
+            var cfg = Configuration.Resolve(m);
+            var reader = cfg.GetReader(m);
             using(var window = new InstructionsWindow(reader)) {
                 window.Text = "Show";
                 window.ShowDialog();

@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
@@ -7,7 +6,7 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ILReader Visualizer")]
-[assembly: AssemblyDescription("Method and Delegate Visualizer")]
+[assembly: AssemblyDescription("IL Visualizer for Methods, DynamicMethods and Delegates")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ILReader")]
@@ -15,12 +14,14 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 //
+
 [assembly: System.Diagnostics.DebuggerVisualizer(
-    typeof(ILReader.MethodVisualizer.DebuggerSide), typeof(VisualizerObjectSource),
-    Target = typeof(System.Reflection.MethodBase), Description = "Method Visualizer")]
+    typeof(ILReader.Visualizer.DebuggerSide), typeof(ILReader.Visualizer.ILDumpObjectSource),
+    Target = typeof(System.Reflection.MethodBase), Description = "MSIL Visualizer(Method)")]
+
 [assembly: System.Diagnostics.DebuggerVisualizer(
-    typeof(ILReader.DelegateVisualizer.DebuggerSide), typeof(VisualizerObjectSource),
-    Target = typeof(System.Delegate), Description = "Delegate Visualizer")]
+    typeof(ILReader.Visualizer.DebuggerSide), typeof(ILReader.Visualizer.ILDumpObjectSource),
+    Target = typeof(System.Delegate), Description = "MSIL Visualizer(Delegate)")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

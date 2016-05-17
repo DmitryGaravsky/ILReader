@@ -24,133 +24,22 @@
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.colIndex = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOffset = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOpCode = new System.Windows.Forms.DataGridViewLinkColumn();
-            this.colOperand = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.iInstructionBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.rbTextView = new System.Windows.Forms.RadioButton();
             this.rbDetailView = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbShowBytes = new System.Windows.Forms.CheckBox();
             this.cbShowOffset = new System.Windows.Forms.CheckBox();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.iInstructionBindingSource)).BeginInit();
+            this.codeBox = new ILReader.Visualizer.UI.CodeBox();
+            this.detailBox = new ILReader.Visualizer.UI.Controls.DetailBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.AutoWordSelection = true;
-            this.richTextBox1.BackColor = System.Drawing.SystemColors.Window;
-            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox1.DetectUrls = false;
-            this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBox1.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(0, 24);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(584, 537);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
-            this.richTextBox1.WordWrap = false;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.AliceBlue;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridView1.AutoGenerateColumns = false;
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dataGridView1.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
-            this.dataGridView1.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colIndex,
-            this.colOffset,
-            this.colOpCode,
-            this.colOperand});
-            this.dataGridView1.DataSource = this.iInstructionBindingSource;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 24);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle6;
-            this.dataGridView1.RowTemplate.Height = 18;
-            this.dataGridView1.ShowEditingIcon = false;
-            this.dataGridView1.Size = new System.Drawing.Size(584, 537);
-            this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
-            // 
-            // colIndex
-            // 
-            this.colIndex.DataPropertyName = "Index";
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.SteelBlue;
-            this.colIndex.DefaultCellStyle = dataGridViewCellStyle2;
-            this.colIndex.FillWeight = 50F;
-            this.colIndex.HeaderText = "#";
-            this.colIndex.Name = "colIndex";
-            this.colIndex.ReadOnly = true;
-            this.colIndex.Width = 39;
-            // 
-            // colOffset
-            // 
-            this.colOffset.DataPropertyName = "Offset";
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.DimGray;
-            dataGridViewCellStyle3.Format = "X4";
-            this.colOffset.DefaultCellStyle = dataGridViewCellStyle3;
-            this.colOffset.FillWeight = 60F;
-            this.colOffset.HeaderText = "Offset";
-            this.colOffset.Name = "colOffset";
-            this.colOffset.ReadOnly = true;
-            this.colOffset.Width = 60;
-            // 
-            // colOpCode
-            // 
-            this.colOpCode.ActiveLinkColor = System.Drawing.Color.White;
-            this.colOpCode.DataPropertyName = "OpCode";
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.Blue;
-            this.colOpCode.DefaultCellStyle = dataGridViewCellStyle4;
-            this.colOpCode.HeaderText = "OpCode";
-            this.colOpCode.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
-            this.colOpCode.Name = "colOpCode";
-            this.colOpCode.ReadOnly = true;
-            this.colOpCode.Width = 52;
-            // 
-            // colOperand
-            // 
-            this.colOperand.DataPropertyName = "Operand";
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.DimGray;
-            this.colOperand.DefaultCellStyle = dataGridViewCellStyle5;
-            this.colOperand.HeaderText = "Operand";
-            this.colOperand.Name = "colOperand";
-            this.colOperand.ReadOnly = true;
-            this.colOperand.Width = 73;
-            // 
-            // iInstructionBindingSource
-            // 
-            this.iInstructionBindingSource.DataSource = typeof(ILReader.Readers.IInstruction);
             // 
             // rbTextView
             // 
             this.rbTextView.AutoSize = true;
             this.rbTextView.Checked = true;
-            this.rbTextView.Location = new System.Drawing.Point(52, 4);
+            this.rbTextView.Location = new System.Drawing.Point(51, 12);
             this.rbTextView.Name = "rbTextView";
             this.rbTextView.Size = new System.Drawing.Size(46, 17);
             this.rbTextView.TabIndex = 1;
@@ -162,7 +51,7 @@
             // rbDetailView
             // 
             this.rbDetailView.AutoSize = true;
-            this.rbDetailView.Location = new System.Drawing.Point(104, 4);
+            this.rbDetailView.Location = new System.Drawing.Point(103, 12);
             this.rbDetailView.Name = "rbDetailView";
             this.rbDetailView.Size = new System.Drawing.Size(57, 17);
             this.rbDetailView.TabIndex = 2;
@@ -173,7 +62,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 6);
+            this.label1.Location = new System.Drawing.Point(12, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(33, 13);
             this.label1.TabIndex = 3;
@@ -182,6 +71,7 @@
             // panel1
             // 
             this.panel1.AutoSize = true;
+            this.panel1.Controls.Add(this.cbShowBytes);
             this.panel1.Controls.Add(this.cbShowOffset);
             this.panel1.Controls.Add(this.rbTextView);
             this.panel1.Controls.Add(this.label1);
@@ -189,8 +79,22 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(584, 24);
+            this.panel1.Padding = new System.Windows.Forms.Padding(8);
+            this.panel1.Size = new System.Drawing.Size(384, 40);
             this.panel1.TabIndex = 5;
+            // 
+            // cbShowBytes
+            // 
+            this.cbShowBytes.AutoSize = true;
+            this.cbShowBytes.Dock = System.Windows.Forms.DockStyle.Right;
+            this.cbShowBytes.Location = new System.Drawing.Point(210, 8);
+            this.cbShowBytes.Margin = new System.Windows.Forms.Padding(0);
+            this.cbShowBytes.Name = "cbShowBytes";
+            this.cbShowBytes.Size = new System.Drawing.Size(82, 24);
+            this.cbShowBytes.TabIndex = 5;
+            this.cbShowBytes.Text = "Show Bytes";
+            this.cbShowBytes.UseVisualStyleBackColor = true;
+            this.cbShowBytes.CheckedChanged += new System.EventHandler(this.cbShowBytes_CheckedChanged);
             // 
             // cbShowOffset
             // 
@@ -198,7 +102,7 @@
             this.cbShowOffset.Checked = true;
             this.cbShowOffset.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbShowOffset.Dock = System.Windows.Forms.DockStyle.Right;
-            this.cbShowOffset.Location = new System.Drawing.Point(500, 0);
+            this.cbShowOffset.Location = new System.Drawing.Point(292, 8);
             this.cbShowOffset.Margin = new System.Windows.Forms.Padding(0);
             this.cbShowOffset.Name = "cbShowOffset";
             this.cbShowOffset.Size = new System.Drawing.Size(84, 24);
@@ -207,21 +111,44 @@
             this.cbShowOffset.UseVisualStyleBackColor = true;
             this.cbShowOffset.CheckedChanged += new System.EventHandler(this.cbShowOffset_CheckedChanged);
             // 
+            // codeBox
+            // 
+            this.codeBox.BackColor = System.Drawing.SystemColors.Window;
+            this.codeBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.codeBox.Location = new System.Drawing.Point(0, 40);
+            this.codeBox.Name = "codeBox";
+            this.codeBox.Padding = new System.Windows.Forms.Padding(8);
+            this.codeBox.Size = new System.Drawing.Size(384, 321);
+            this.codeBox.TabIndex = 0;
+            // 
+            // detailBox
+            // 
+            this.detailBox.BytesVisible = false;
+            this.detailBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.detailBox.Location = new System.Drawing.Point(0, 0);
+            this.detailBox.Name = "detailBox";
+            this.detailBox.OffsetVisible = true;
+            this.detailBox.Padding = new System.Windows.Forms.Padding(8);
+            this.detailBox.Size = new System.Drawing.Size(384, 361);
+            this.detailBox.TabIndex = 6;
+            // 
             // InstructionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 561);
-            this.Controls.Add(this.richTextBox1);
-            this.Controls.Add(this.dataGridView1);
+            this.ClientSize = new System.Drawing.Size(384, 361);
+            this.Controls.Add(this.codeBox);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.detailBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Location = new System.Drawing.Point(100, 100);
             this.Name = "InstructionsWindow";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "InstructionsWindow";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.iInstructionBindingSource)).EndInit();
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.window_FormClosing);
+            this.Load += new System.EventHandler(this.window_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -231,17 +158,13 @@
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.BindingSource iInstructionBindingSource;
+        private CodeBox codeBox;
         private System.Windows.Forms.RadioButton rbTextView;
         private System.Windows.Forms.RadioButton rbDetailView;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colIndex;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colOffset;
-        private System.Windows.Forms.DataGridViewLinkColumn colOpCode;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colOperand;
         private System.Windows.Forms.CheckBox cbShowOffset;
+        private Controls.DetailBox detailBox;
+        private System.Windows.Forms.CheckBox cbShowBytes;
     }
 }

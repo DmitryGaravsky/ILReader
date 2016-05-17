@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using ILReader.Readers;
@@ -9,57 +8,68 @@ namespace ILReader.Visualizer.UI {
         public InstructionsWindow() {
             InitializeComponent();
         }
-        public InstructionsWindow(IEnumerable<IInstruction> instructions)
+        Readers.IILReader ILReader;
+        public InstructionsWindow(IEnumerable<IInstruction> reader)
             : this() {
-            AppendLines(instructions);
-            //
-            iInstructionBindingSource.DataSource = instructions.ToList();
+            ILReader = reader as Readers.IILReader;
+            if(ILReader == null)
+                LoadSettingsAndUpdate(reader);
         }
-        void AppendLines(IEnumerable<IInstruction> instructions, bool showOffset = true) {
-            richTextBox1.ResetText();
-            foreach(var instruction in instructions)
-                AppendLine(richTextBox1, instruction.Text, instruction.OpCode.ToString(), showOffset);
+        void window_FormClosing(object sender, FormClosingEventArgs e) {
+            SaveSettings();
         }
-        static void AppendLine(RichTextBox rtb, string line, string keyword, bool showOffset = true) {
-            if(showOffset) {
-                rtb.SelectionStart = rtb.TextLength;
-                rtb.SelectionLength = 0;
-                rtb.SelectionColor = Color.Gray;
-                rtb.AppendText(line.Substring(0, 8));
-            }
-            rtb.SelectionStart = rtb.TextLength;
-            rtb.SelectionLength = 0;
-            rtb.SelectionColor = Color.Blue;
-            rtb.AppendText(keyword);
-            //
-            rtb.SelectionColor = rtb.ForeColor;
-            rtb.SelectionStart = rtb.TextLength;
-            rtb.SelectionLength = 0;
-            rtb.AppendText(line.Substring(line.IndexOf(keyword) + keyword.Length));
-            //
-            rtb.AppendText(System.Environment.NewLine);
+        void window_Load(object sender, System.EventArgs e) {
+            if(ILReader != null)
+                LoadSettingsAndUpdate(ILReader);
         }
         void textView_CheckedChanged(object sender, System.EventArgs e) {
-            richTextBox1.BringToFront();
+            codeBox.BringToFront();
         }
         void detailView_CheckedChanged(object sender, System.EventArgs e) {
-            dataGridView1.BringToFront();
+            detailBox.BringToFront();
+        }
+        void cbShowBytes_CheckedChanged(object sender, System.EventArgs e) {
+            detailBox.BytesVisible = cbShowBytes.Checked;
+            UpdateCodeBox(cbShowOffset.Checked, cbShowBytes.Checked);
         }
         void cbShowOffset_CheckedChanged(object sender, System.EventArgs e) {
-            colOffset.Visible = cbShowOffset.Checked;
-            AppendLines((IEnumerable<IInstruction>)iInstructionBindingSource.DataSource, cbShowOffset.Checked);
+            detailBox.OffsetVisible = cbShowOffset.Checked;
+            UpdateCodeBox(cbShowOffset.Checked, cbShowBytes.Checked);
         }
-        //
-        const string uriFormat = @"https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.{0}(v=vs.110).aspx";
-        void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) {
-            if(e.ColumnIndex == colOpCode.Index) {
-                var opCode = (System.Reflection.Emit.OpCode)dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
-                OpenUrl(new System.Uri(string.Format(uriFormat, opCode.ToString()), System.UriKind.Absolute));
-            }
+        void LoadSettingsAndUpdate(IEnumerable<IInstruction> instructions) {
+            LoadSettings();
+            UpdateCodeBox(instructions, cbShowOffset.Checked, cbShowBytes.Checked);
+            detailBox.DataSource = instructions.ToList();
         }
-        static void OpenUrl(System.Uri uri) {
-            try { System.Diagnostics.Process.Start(uri.AbsoluteUri); }
-            catch { }
+        void UpdateCodeBox(bool showOffset, bool showBytes) {
+            UpdateCodeBox(ILReader ?? GetInstructions(), showOffset, showBytes);
+        }
+        void UpdateCodeBox(IEnumerable<IInstruction> instructions, bool showOffset, bool showBytes) {
+            codeBox.AppendLines(instructions ?? GetInstructions(), showOffset, showBytes);
+        }
+        IEnumerable<IInstruction> GetInstructions() {
+            return (IEnumerable<IInstruction>)detailBox.DataSource;
+        }
+        void LoadSettings() {
+            var settings = Properties.Settings.Default;
+            detailBox.BytesVisible = cbShowBytes.Checked = settings.ShowBytes;
+            detailBox.OffsetVisible = cbShowOffset.Checked = settings.ShowOffset;
+            codeBox.CodeSize = settings.CodeSize;
+            Bounds = new System.Drawing.Rectangle(settings.Left, settings.Top, settings.Width, settings.Height);
+            WindowState = (FormWindowState)settings.WindowState;
+        }
+        void SaveSettings() {
+            var settings = Properties.Settings.Default;
+            settings.WindowState = (int)WindowState;
+            var bounds = (WindowState != FormWindowState.Normal) ? RestoreBounds : Bounds;
+            settings.Left = bounds.Left;
+            settings.Top = bounds.Top;
+            settings.Width = bounds.Width;
+            settings.Height = bounds.Height;
+            settings.ShowBytes = cbShowBytes.Checked;
+            settings.ShowOffset = cbShowOffset.Checked;
+            settings.CodeSize = codeBox.CodeSize;
+            settings.Save();
         }
     }
 }

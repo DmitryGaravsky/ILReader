@@ -12,7 +12,7 @@
         static void CreateOpCodes() {
             singleByteOpCode = new OpCode[225];
             doubleByteOpCode = new OpCode[31];
-
+            //
             FieldInfo[] fields = GetOpCodeFields();
             for(int i = 0; i < fields.Length; i++) {
                 OpCode code = (OpCode)fields[i].GetValue(null);
@@ -28,9 +28,10 @@
             return typeof(OpCodes).GetFields(BindingFlags.Public | BindingFlags.Static);
         }
         #endregion Initialization
+        const int DoubleByteInstructionPrefix = 254;
         public static OpCode ReadOpCode(IBinaryReader binaryReader) {
             byte instruction = binaryReader.ReadByte();
-            if(instruction != 254)
+            if(instruction != DoubleByteInstructionPrefix)
                 return singleByteOpCode[instruction];
             else
                 return doubleByteOpCode[binaryReader.ReadByte()];

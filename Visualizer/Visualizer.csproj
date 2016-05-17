@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ILReader.Visualizer</RootNamespace>
-    <RootNamespace>ILReader</RootNamespace>
+    <RootNamespace>ILReader.Visualizer</RootNamespace>
     <AssemblyName>ILReader.Visualizer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,6 +43,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
     <Reference Include="nunit.framework" />
@@ -48,8 +51,6 @@
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -58,8 +59,25 @@
   <ItemGroup>
     <Compile Include="DebuggerSide.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Tests\InstructionsWindow.cs" />
     <Compile Include="Tests\Visualizers.cs" />
+    <Compile Include="UI\Controls\CodeBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\CodeBox.Designer.cs">
+      <DependentUpon>CodeBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\DetailBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\DetailBox.Designer.cs">
+      <DependentUpon>DetailBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\InstructionsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -68,21 +86,38 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="UI\Controls\CodeBox.resx">
+      <DependentUpon>CodeBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Controls\DetailBox.resx">
+      <DependentUpon>DetailBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\InstructionsWindow.resx">
       <DependentUpon>InstructionsWindow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Properties\DataSources\ILReader.Readers.IInstruction.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Analyzer\Analyzer.csproj">
+      <Project>{84935330-8317-467a-bd8f-84de34a06905}</Project>
+      <Name>Analyzer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{2fde2dc0-f1dc-4090-84cd-58c0204cc63d}</Project>
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)*.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2013\Visualizers" /y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

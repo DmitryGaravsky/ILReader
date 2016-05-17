@@ -1,20 +1,30 @@
 ﻿namespace ILReader.Readers {
-    using System;
     using System.Collections.Generic;
+    using System.Reflection.Emit;
 
     public interface IILReader : IEnumerable<IInstruction> {
+        void CopyTo(IInstruction[] array, int index);
         IInstruction this[int index] { get; }
-        IInstruction this[IInstruction instruction, int offset] { get; }
-        IInstruction FindPrev(IInstruction instruction, Predicate<IInstruction> match);
-        IInstruction FindNext(IInstruction instruction, Predicate<IInstruction> match);
+        int Count { get; }
+        //
+        string Name { get; }
+        IEnumerable<IMetadataItem> Metadata { get; }
     }
     //
     public interface IInstruction {
         int Index { get; }
         int Offset { get; }
         string Text { get; }
-        //
-        System.Reflection.Emit.OpCode OpCode { get; }
+        OpCode OpCode { get; }
         object Operand { get; }
+        //
+        byte[] Bytes { get; }
+    }
+    //
+    public interface IMetadataItem {
+        string Name { get; }
+        object Value { get; }
+        bool HasChildren { get; }
+        IEnumerable<IMetadataItem> Children { get; }
     }
 }

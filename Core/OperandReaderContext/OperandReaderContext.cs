@@ -3,43 +3,63 @@
     using System.Linq;
     using System.Reflection;
 
-    class OperandReaderContext : IOperandReaderContext {
-        public OperandReaderContext(MethodBase method)
-            : this(method, method.GetMethodBody()) {
-        }
-        public OperandReaderContext(MethodBase method, MethodBody methodBody) {
-            module = method.Module;
-            variables = methodBody.LocalVariables.ToArray();
-            methodArguments = method.IsGenericMethod ? method.GetGenericArguments() : null;
-            typeArguments = (method.DeclaringType != null) && method.DeclaringType.IsGenericType ? method.DeclaringType.GetGenericArguments() : null;
-        }
+    class OperandReaderContext : OperandReaderContextReal, IOperandReaderContext {
         readonly Module module;
-        readonly LocalVariableInfo[] variables;
         readonly Type[] methodArguments;
         readonly Type[] typeArguments;
-        public LocalVariableInfo this[byte variableIndex] {
-            get { return variables[variableIndex]; } 
+        public OperandReaderContext(MethodBase method, MethodBody methodBody) {
+            System.Runtime.CompilerServices.RuntimeHelpers.PrepareMethod(method.MethodHandle);
+            this.module = method.Module;
+            this.name = method.Name;
+            //
+            var implFlags = method.GetMethodImplementationFlags();
+            this.initLocals = (methodBody != null) && methodBody.InitLocals;
+            this.maxStackSize = (methodBody != null) ? methodBody.MaxStackSize : 0;
+            this.@this = method.DeclaringType;
+            this.variables = (methodBody != null) ? methodBody.LocalVariables.ToArray() : new object[] { };
+            this.arguments = method.GetParameters();
+            ConstructorInfo cInfo = method as ConstructorInfo;
+            if(cInfo != null) {
+                this.methodSpec =
+                    (cInfo.IsStatic ? "static " : string.Empty) + ".ctor " +
+                    cInfo.DeclaringType.ToString() + " " + implFlags.ToString().ToLower();
+            }
+            MethodInfo mInfo = method as MethodInfo;
+            if(mInfo != null) {
+                this.methodSpec =
+                    (mInfo.IsStatic ? "static " : "instance ") +
+                    ((mInfo.ReturnType != null && mInfo.ReturnType != typeof(void)) ? mInfo.ReturnType.ToString() + " " : "void ") +
+                    mInfo.Name + " " + implFlags.ToString().ToLower();
+            }
+            methodArguments = method.IsGenericMethod ?
+                method.GetGenericArguments() : null;
+            typeArguments = (method.DeclaringType != null) && method.DeclaringType.IsGenericType ?
+                method.DeclaringType.GetGenericArguments() : null;
+            //
+            this.ILBytes = (methodBody != null) ? methodBody.GetILAsByteArray() : null;
         }
-        public LocalVariableInfo this[short variableIndex] {
-            get { return variables[variableIndex]; } 
+        public OperandReaderContextType Type {
+            get { return OperandReaderContextType.Method; }
         }
-        public MethodBase ResolveMethod(int methodToken) {
-            return module.ResolveMethod(methodToken, typeArguments, methodArguments);
+        #region Resolve
+        public object ResolveMethod(int methodToken) {
+            return GetOrCache(methodTokens, methodToken, t => module.ResolveMethod(t, typeArguments, methodArguments));
         }
-        public FieldInfo ResolveField(int fieldToken) {
-            return module.ResolveField(fieldToken, typeArguments, methodArguments);
+        public object ResolveField(int fieldToken) {
+            return GetOrCache(fieldTokens, fieldToken, t => module.ResolveField(t, typeArguments, methodArguments));
         }
-        public Type ResolveType(int typeToken) {
-            return module.ResolveType(typeToken, typeArguments, methodArguments);
+        public object ResolveType(int typeToken) {
+            return GetOrCache(typeTokens, typeToken, t => module.ResolveType(t, typeArguments, methodArguments));
         }
-        public MemberInfo ResolveMember(int memberToken) {
-            return module.ResolveMember(memberToken, typeArguments, methodArguments);
+        public object ResolveMember(int memberToken) {
+            return GetOrCache(memberTokens, memberToken, t => module.ResolveMember(t, typeArguments, methodArguments));
         }
         public string ResolveString(int stringToken) {
-            return module.ResolveString(stringToken);
+            return GetOrCache(stringTokens, stringToken, t => module.ResolveString(t));
         }
-        public byte[] ResolveSignature(int sigToken) {
-            return module.ResolveSignature(sigToken);
+        public byte[] ResolveSignature(int signatureToken) {
+            return GetOrCache(signatureTokens, signatureToken, t => module.ResolveSignature(t));
         }
+        #endregion Resolve
     }
 }
