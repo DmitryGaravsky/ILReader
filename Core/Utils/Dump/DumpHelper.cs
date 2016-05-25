@@ -1,6 +1,7 @@
 namespace ILReader.Dump {
     using System.Linq;
     using System.Collections.Generic;
+using System;
 
     static class DumpHelper {
         static byte[] GetBytes(string str) {
@@ -34,27 +35,27 @@ namespace ILReader.Dump {
             Write(GetBytes(value), dump);
         }
         //
-        internal static void Write<T>(T[] cache, System.IO.Stream dump) {
+        internal static void Write<T>(T[] cache, System.IO.Stream dump, Func<T, string> toString) {
             Write(cache.Length, dump);
             for(int i = 0; i < cache.Length; i++)
-                Write(cache[i].ToString(), dump);
+                Write(toString(cache[i]), dump);
         }
         //
-        internal static void Write<T>(IDictionary<int, T> cache, System.IO.Stream dump) {
+        internal static void Write<T>(IDictionary<int, T> cache, System.IO.Stream dump, Func<T, string> toString) {
             Write(cache.Count, dump);
             foreach(var item in cache) {
                 Write(item.Key, dump);
-                Write(item.Value.ToString(), dump);
+                Write(toString(item.Value), dump);
             }
         }
-        internal static void Write<T>(IDictionary<int, string> cache, System.IO.Stream dump) {
+        internal static void Write(IDictionary<int, string> cache, System.IO.Stream dump) {
             Write(cache.Count, dump);
             foreach(var item in cache) {
                 Write(item.Key, dump);
                 Write(item.Value, dump);
             }
         }
-        internal static void Write<T>(IDictionary<int, byte[]> cache, System.IO.Stream dump) {
+        internal static void Write(IDictionary<int, byte[]> cache, System.IO.Stream dump) {
             Write(cache.Count, dump);
             foreach(var item in cache) {
                 Write(item.Key, dump);

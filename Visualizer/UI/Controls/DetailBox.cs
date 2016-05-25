@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace ILReader.Visualizer.UI.Controls {
@@ -7,8 +9,26 @@ namespace ILReader.Visualizer.UI.Controls {
             InitializeComponent();
         }
         public object DataSource {
-            get { return dataGridView1.DataSource; }
-            set { dataGridView1.DataSource = value; }
+            get { return dataGridView.DataSource; }
+            set {
+                dataGridView.DataSource = ((IEnumerable<Readers.IInstruction>)value).ToList();
+                ShowIssues(value as ILReader.Readers.IILReader);
+            }
+        }
+        void ShowIssues(Readers.IILReader reader) {
+            var nopColor = Color.FromArgb(200, 200, 255);
+            ShowIssues(reader, nopColor, Analyzer.Nop.Instance);
+            var issueColor = Color.FromArgb(255, 200, 255);
+            ShowIssues(reader, issueColor, Analyzer.Box.Instance);
+            ShowIssues(reader, issueColor, Analyzer.Unbox.Instance);
+            dataGridView.ClearSelection();
+        }
+        void ShowIssues(Readers.IILReader reader, Color color, Analyzer.ILPattern pattern) {
+            if(reader == null)
+                return;
+            while(pattern.Match(reader, false))
+                dataGridView.Rows[pattern.StartIndex].Cells[colOpCode.Name].Style.BackColor = color;
+            pattern.Reset();
         }
         public bool OffsetVisible {
             get { return colOffset.Visible; }
@@ -32,8 +52,8 @@ namespace ILReader.Visualizer.UI.Controls {
         }
         const string uriFormat = @"https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.{0}(v=vs.110).aspx";
         void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e) {
-            if(e.ColumnIndex == colOpCode.Index) {
-                var opCode = (System.Reflection.Emit.OpCode)dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            if(e.ColumnIndex == colOpCode.Index && e.RowIndex > 0) {
+                var opCode = (System.Reflection.Emit.OpCode)dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
                 OpenUrl(new System.Uri(string.Format(uriFormat, GetOpcodeName(opCode)), System.UriKind.Absolute));
             }
         }

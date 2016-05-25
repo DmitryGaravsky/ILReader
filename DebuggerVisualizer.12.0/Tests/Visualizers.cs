@@ -37,7 +37,7 @@ namespace ILReader.Visualizer.Tests {
     static class TestHelper {
         internal static void ShowVisualizer(object objectToVisualize) {
             VisualizerDevelopmentHost visualizerHost = new VisualizerDevelopmentHost(objectToVisualize,
-                typeof(ILReader.Visualizer.DebuggerSide), typeof(ILReader.Visualizer.ILDumpObjectSource));
+                typeof(ILReader.DebuggerVisualizer.DebuggerSide), typeof(ILReader.DebuggerVisualizer.ILDumpObjectSource));
             visualizerHost.ShowVisualizer();
         }
     }
@@ -128,8 +128,8 @@ namespace ILReader.Visualizer.Tests {
         static DynamicMethod CreateSum1() {
             DynamicMethod m = new DynamicMethod("Sum", typeof(int), new Type[] { typeof(int), typeof(int) });
             var ilgen = m.GetILGenerator();
-            ilgen.Emit(OpCodes.Ldarg_0);
             ilgen.Emit(OpCodes.Ldarg_1);
+            ilgen.Emit(OpCodes.Ldarg_2);
             ilgen.Emit(OpCodes.Add);
             ilgen.Emit(OpCodes.Ret);
             return m;

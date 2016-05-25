@@ -9,10 +9,16 @@ namespace ILReader.Visualizer.Tests {
         public void Show() {
             var m = typeof(InstructionsWindowTests).GetMethod("Show");
             var cfg = Configuration.Resolve(m);
-            var reader = cfg.GetReader(m);
-            using(var window = new InstructionsWindow(reader)) {
-                window.Text = "Show";
-                window.ShowDialog();
+            var source = cfg.GetReader(m) as Dump.ISupportDump;
+            using(var ms = new System.IO.MemoryStream()) {
+                source.Dump(ms);
+                ms.Seek(0, System.IO.SeekOrigin.Begin);
+                cfg = Configuration.Resolve(ms);
+                var reader = cfg.GetReader(ms);
+                using(var window = new InstructionsWindow(reader)) {
+                    window.Text = reader.Name;
+                    window.ShowDialog();
+                }
             }
         }
     }

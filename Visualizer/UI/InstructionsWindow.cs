@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using ILReader.Readers;
+﻿namespace ILReader.Visualizer.UI {
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Linq;
+    using System.Windows.Forms;
+    using ILReader.Readers;
 
-namespace ILReader.Visualizer.UI {
     public partial class InstructionsWindow : Form {
         public InstructionsWindow() {
             InitializeComponent();
@@ -22,6 +23,10 @@ namespace ILReader.Visualizer.UI {
             if(ILReader != null)
                 LoadSettingsAndUpdate(ILReader);
         }
+        void imgBox_Click(object sender, System.EventArgs e) {
+            using(var about = new About()) 
+                about.ShowDialog();
+        }
         void textView_CheckedChanged(object sender, System.EventArgs e) {
             codeBox.BringToFront();
         }
@@ -38,8 +43,26 @@ namespace ILReader.Visualizer.UI {
         }
         void LoadSettingsAndUpdate(IEnumerable<IInstruction> instructions) {
             LoadSettings();
+            LoadImage(instructions as Readers.IILReader);
             UpdateCodeBox(instructions, cbShowOffset.Checked, cbShowBytes.Checked);
-            detailBox.DataSource = instructions.ToList();
+            detailBox.DataSource = instructions;
+        }
+        void LoadImage(IILReader ILReader) {
+            imgBox.Image = LoadImage("method");
+            if(ILReader == null)
+                return;
+            var methodDesc = ILReader.Metadata.FirstOrDefault();
+            if(methodDesc != null) {
+                if(methodDesc.Name.Contains(".ctor"))
+                    imgBox.Image = LoadImage("constructor");
+                if(methodDesc.Name.Contains("dynamic"))
+                    imgBox.Image = LoadImage("dynmethod");
+            }
+        }
+        Image LoadImage(string imageName) {
+            var asm = typeof(InstructionsWindow).Assembly;
+            using(var s = asm.GetManifestResourceStream("ILReader.Visualizer.Images." + imageName)) 
+                return Image.FromStream(s);
         }
         void UpdateCodeBox(bool showOffset, bool showBytes) {
             UpdateCodeBox(ILReader ?? GetInstructions(), showOffset, showBytes);
@@ -50,6 +73,7 @@ namespace ILReader.Visualizer.UI {
         IEnumerable<IInstruction> GetInstructions() {
             return (IEnumerable<IInstruction>)detailBox.DataSource;
         }
+        #region Settings
         void LoadSettings() {
             var settings = Properties.Settings.Default;
             detailBox.BytesVisible = cbShowBytes.Checked = settings.ShowBytes;
@@ -71,5 +95,6 @@ namespace ILReader.Visualizer.UI {
             settings.CodeSize = codeBox.CodeSize;
             settings.Save();
         }
+        #endregion Settings
     }
 }

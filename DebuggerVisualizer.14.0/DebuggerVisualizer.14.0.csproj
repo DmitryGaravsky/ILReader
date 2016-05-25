@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{84935330-8317-467A-BD8F-84DE34A06905}</ProjectGuid>
+    <ProjectGuid>{AA46CCAF-97C8-4D9F-B675-B6ECB0DCC1AF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ILReader.Analyzer</RootNamespace>
-    <AssemblyName>ILReader.Analyzer</AssemblyName>
+    <RootNamespace>ILReader.DebuggerVisualizer</RootNamespace>
+    <AssemblyName>DebuggerVisualizer.14.0</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,10 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>
-    </NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,43 +40,45 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>
-    </NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
     <Reference Include="nunit.framework" />
-    <Compile Include="Tests\Patterns.cs" />
+    <Compile Include="Tests\Visualizers.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pattern.cs" />
-    <Compile Include="Patterns\Boxing\Box.cs" />
-    <Compile Include="Patterns\Nop.cs" />
-    <Compile Include="Patterns\Boxing\Unbox.cs" />
-    <Compile Include="Patterns\ILPattern.cs" />
-    <Compile Include="Patterns\Events\EventAnalyzer.cs" />
-    <Compile Include="Patterns\Events\Subscribe.cs" />
-    <Compile Include="Patterns\Events\Unsubscribe.cs" />
-    <Compile Include="Patterns\Exceptions\ExceptionAnalizer.cs" />
-    <Compile Include="Patterns\Exceptions\NotImplemented.cs" />
-    <Compile Include="Patterns\Exceptions\NotSupported.cs" />
+    <Compile Include="DebuggerSide.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Analyzer\Analyzer.csproj">
+      <Project>{84935330-8317-467a-bd8f-84de34a06905}</Project>
+      <Name>Analyzer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{2fde2dc0-f1dc-4090-84cd-58c0204cc63d}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Visualizer\Visualizer.csproj">
+      <Project>{db615380-3d2b-49a1-8e55-ef6eb65fc40e}</Project>
+      <Name>Visualizer</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)FastAccessors.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y
+xcopy "$(TargetDir)ILReader.Core.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y
+xcopy "$(TargetDir)ILReader.Visualizer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y
+xcopy "$(TargetDir)ILReader.Analyzer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y
+xcopy "$(TargetDir)DebuggerVisualizer.14.0.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

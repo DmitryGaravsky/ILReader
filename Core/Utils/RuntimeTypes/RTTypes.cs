@@ -26,8 +26,8 @@
             Array.Copy((byte[])ILGenerator.@ƒ(fld_m_ILStream), bytes, bytes.Length);
         }
         static readonly int fld_m_localSignature = "m_localSignature".@ƒRegister(ILGeneratorType);
-        internal static SignatureHelper GetLocalSignature(object ILGenerator) {
-            return (SignatureHelper)ILGenerator.@ƒ(fld_m_localSignature);
+        internal static byte[] GetLocalSignature(object ILGenerator) {
+            return ((SignatureHelper)ILGenerator.@ƒ(fld_m_localSignature)).GetSignature();
         }
         static readonly int fld_m_maxStackSize = "m_maxStackSize".@ƒRegister(ILGeneratorType);
         internal static int GetMaxStackSize(object ILGenerator) {

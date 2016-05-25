@@ -1,7 +1,7 @@
-﻿namespace ILReader.Visualizer {
+﻿namespace ILReader.DebuggerVisualizer {
     using ILReader.Readers;
+    using ILReader.Visualizer.UI;
     using Microsoft.VisualStudio.DebuggerVisualizers;
-    using System;
 
     public class DebuggerSide : DialogDebuggerVisualizer {
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider) {
@@ -10,7 +10,7 @@
         protected void ShowInstructionsWindow(IDialogVisualizerService windowService, System.IO.Stream data) {
             using(data) {
                 var reader = CreateReader(data);
-                using(var form = new UI.InstructionsWindow(reader) { Text = reader.Name })
+                using(var form = new InstructionsWindow(reader) { Text = reader.Name })
                     windowService.ShowDialog(form);
             }
         }
@@ -23,7 +23,7 @@
         public override void GetData(object source, System.IO.Stream data) {
             var methodBase =
                 (source as System.Reflection.MethodBase) ??
-                ((source is Delegate) ? ((Delegate)source).Method : null);
+                ((source is System.Delegate) ? ((System.Delegate)source).Method : null);
             if(methodBase != null) {
                 try {
                     var reader = CreateReader(methodBase) as Dump.ISupportDump;

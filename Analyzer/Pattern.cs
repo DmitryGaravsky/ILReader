@@ -4,19 +4,18 @@
     using System.Linq;
 
     public abstract class MatchPattern<T> {
-        readonly Func<T[], bool> matchFunc;
+        readonly Func<int, T[], bool> matchFunc;
         protected MatchPattern(Func<T, Func<T, bool>> getMatch, params T[] elements)
             : this(elements.Select(e => getMatch(e)).ToArray()) {
         }
         protected MatchPattern(params Func<T, bool>[] matches) {
-            matchFunc = (elements) =>
+            matchFunc = (start, elements) =>
             {
                 List<T> foundElements = new List<T>();
                 List<int> foundIndexes = new List<int>();
-                int start = 0;
                 foreach(var match in matches) {
                     int index = Array.FindIndex(elements, start, element => match(element));
-                    if(index == -1) 
+                    if(index == -1)
                         return false;
                     if(!startIndex.HasValue)
                         startIndex = index;
@@ -29,9 +28,9 @@
                 return result.Length > 0;
             };
         }
-        protected bool Match(T[] elements) {
+        protected bool Match(T[] elements, int startIndex) {
             Reset();
-            return matchFunc(elements);
+            return matchFunc(startIndex, elements);
         }
         //
         int? startIndex;

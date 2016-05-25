@@ -115,20 +115,20 @@
                     if(rawOperand != null) {
                         if(argIndex.HasValue) {
                             if(argIndex.Value > 0)
-                                return string.Format("IL_{0:X4}: {1}   (@arg.{2} {3})", Offset, OpCode.ToString(), argIndex.Value.ToString(), rawOperand.ToString());
+                                return string.Format("IL_{0:X4}: {1}   (@arg.{2} {3})", Offset, OpCode.ToString(), argIndex.Value.ToString(), rawOperand.ToString().TrimEnd());
                             else
-                                return string.Format("IL_{0:X4}: {1}   (@this {2})", Offset, OpCode.ToString(), rawOperand.ToString());
+                                return string.Format("IL_{0:X4}: {1}   (@this {2})", Offset, OpCode.ToString(), rawOperand.ToString().TrimEnd());
                         }
-                        return string.Format("IL_{0:X4}: {1} ({2})", Offset, OpCode.ToString(), rawOperand.ToString());
+                        return string.Format("IL_{0:X4}: {1} ({2})", Offset, OpCode.ToString(), rawOperand.ToString().TrimEnd());
                     }
                     else return string.Format("IL_{0:X4}: {1}", Offset, OpCode.ToString());
                 }
                 else {
                     string suffix = string.Empty;
                     if(argIndex.HasValue)
-                        suffix = string.Format(" (@arg.{0} {1})", argIndex.Value.ToString(), (rawOperand ?? Operand).ToString());
+                        suffix = string.Format(" (@arg.{0} {1})", argIndex.Value.ToString(), (rawOperand ?? Operand).ToString().TrimEnd());
                     if(locIndex.HasValue)
-                        suffix = string.Format(" (@loc.{0} {1})", locIndex.Value.ToString(), (rawOperand ?? Operand).ToString());
+                        suffix = string.Format(" (@loc.{0} {1})", locIndex.Value.ToString(), (rawOperand ?? Operand).ToString().TrimEnd());
                     //
                     return string.Format("IL_{0:X4}: {1} {2}", Offset, OpCode.ToString(), Operand.ToString()) + suffix;
                 }

@@ -42,17 +42,17 @@ namespace ILReader.Context {
         }
         protected IEnumerable<Readers.IMetadataItem> GetArgs() {
             for(int i = 0; i < arguments.Length; i++)
-                yield return new Readers.MetadataItem("[" + i.ToString() + "]", arguments[i].ToString());
+                yield return new Readers.MetadataItem("[" + i.ToString() + "]", ArgumentToString(arguments[i]));
         }
         protected IEnumerable<Readers.IMetadataItem> GetLocals() {
             for(int i = 0; i < variables.Length; i++)
-                yield return new Readers.MetadataItem("[" + i.ToString() + "]", variables[i].ToString());
+                yield return new Readers.MetadataItem("[" + i.ToString() + "]", VariableToString(variables[i]));
         }
         // Body
         readonly static byte[] EmptyIL = new byte[] { };
         protected byte[] ILBytes;
         public byte[] GetIL() {
-            return ILBytes ?? EmptyIL; 
+            return ILBytes ?? EmptyIL;
         }
         // Tokens
         protected readonly IDictionary<int, MethodBase> methodTokens = new Dictionary<int, MethodBase>();
@@ -72,14 +72,64 @@ namespace ILReader.Context {
         // Dump
         public void Dump(System.IO.Stream stream) {
             ILReader.Dump.DumpHelper.Write((@this ?? String.Empty).ToString(), stream);
-            ILReader.Dump.DumpHelper.Write(arguments, stream);
-            ILReader.Dump.DumpHelper.Write(variables, stream);
-            ILReader.Dump.DumpHelper.Write(methodTokens, stream);
-            ILReader.Dump.DumpHelper.Write(fieldTokens, stream);
-            ILReader.Dump.DumpHelper.Write(typeTokens, stream);
-            ILReader.Dump.DumpHelper.Write(memberTokens, stream);
+            ILReader.Dump.DumpHelper.Write(arguments, stream, ArgumentToString);
+            ILReader.Dump.DumpHelper.Write(variables, stream, VariableToString);
+            ILReader.Dump.DumpHelper.Write(methodTokens, stream, MethodToString);
+            ILReader.Dump.DumpHelper.Write(fieldTokens, stream, FieldToString);
+            ILReader.Dump.DumpHelper.Write(typeTokens, stream, TypeToString);
+            ILReader.Dump.DumpHelper.Write(memberTokens, stream, MemberToString);
             ILReader.Dump.DumpHelper.Write(stringTokens, stream);
             ILReader.Dump.DumpHelper.Write(signatureTokens, stream);
+        }
+        protected virtual string ArgumentToString(object argument) {
+            var parameterInfo = (ParameterInfo)argument;
+            return TypeToString(parameterInfo.ParameterType) + " " + parameterInfo.Name;
+        }
+        protected virtual string VariableToString(object variable) {
+            return variable.ToString();
+        }
+        static IDictionary<Type, string> typeAliases = new Dictionary<Type, string> { 
+            { typeof(void), "void" },
+            { typeof(object), "object" },
+            { typeof(string), "string" },
+            { typeof(bool), "bool" },
+            { typeof(char), "char" },
+            { typeof(byte), "byte" },
+            { typeof(int), "int" },
+            { typeof(long), "long" },
+            { typeof(decimal), "decimal" },
+            { typeof(float), "float" },
+            { typeof(double), "double" },
+        };
+        protected static string TypeToString(Type type) {
+            string alias;
+            return typeAliases.TryGetValue(type, out alias) ? alias :
+                (type.Namespace == "System" || type.Namespace == "System.Reflection" ? type.Name : type.ToString());
+        }
+        static string MethodToString(MethodBase method) {
+            string returnType, declaringType = null;
+            if(method.DeclaringType != null)
+                declaringType = TypeToString(method.DeclaringType);
+            if(!method.IsConstructor) {
+                var mInfo = method as MethodInfo;
+                if(mInfo != null) {
+                    returnType = TypeToString(mInfo.ReturnType);
+                    string name = method.Name;
+                    if(!string.IsNullOrEmpty(declaringType))
+                        name = declaringType + "." + name;
+                    return returnType + " " + name;
+                }
+            }
+            return method.ToString();
+        }
+        static string FieldToString(FieldInfo field) {
+            return field.ToString();
+        }
+        static string MemberToString(MemberInfo member) {
+            var method = member as MethodBase;
+            if(method != null)
+                return MethodToString(method);
+            return member.ToString();
         }
     }
 }

@@ -43,8 +43,12 @@ namespace ILReader.Visualizer.UI {
                 rtbCode.AppendText(System.Environment.NewLine);
             }
             int bytesLength = instructions.Any() ? instructions.Max(i => i.Bytes.Length) : 0;
-            foreach(var instruction in instructions)
-                AppendLine(rtbCode, instruction.Text, instruction.Bytes, bytesLength, instruction.OpCode.ToString(), showOffset, showBytes);
+            foreach(var instruction in instructions) {
+                if(instruction.OpCode == System.Reflection.Emit.OpCodes.Ldstr)
+                    AppendLdSrtLine(rtbCode, instruction.Text, instruction.Bytes, bytesLength, (string)instruction.Operand, showOffset, showBytes);
+                else
+                    AppendLine(rtbCode, instruction.Text, instruction.Bytes, bytesLength, instruction.OpCode.ToString(), showOffset, showBytes);
+            }
             rtbCode.EndUpdate();
             //
             if(codeSize.HasValue) {
@@ -64,14 +68,30 @@ namespace ILReader.Visualizer.UI {
         }
         static void AppendLine(RichTextBox rtb, string meta, object value, int offset = 0, bool newLine = true) {
             if(meta != null) {
-                SetColor(rtb, Color.Green);
-                rtb.AppendText(meta.PadLeft(offset + meta.Length));
+                var metaName = meta.PadLeft(offset + meta.Length);
+                AppendHighlight(rtb, metaName, Color.Blue, Color.Green);
             }
             if(value != null) {
-                SetColor(rtb, Color.DarkBlue);
-                rtb.AppendText((meta != null) ? (" " + value.ToString()) : value.ToString());
+                var metaValue = (meta != null) ? (" " + value.ToString()) : value.ToString();
+                AppendHighlight(rtb, metaValue, Color.Blue, Color.DarkBlue);
             }
             if(newLine) rtb.AppendText(System.Environment.NewLine);
+        }
+        static void AppendLdSrtLine(RichTextBox rtb, string line, byte[] bytes, int bytesLength, string value, bool showOffset, bool showBytes) {
+            if(showOffset) {
+                SetColor(rtb, Color.Gray);
+                rtb.AppendText(line.Substring(0, line.IndexOf(':') + 2));
+            }
+            if(showBytes) {
+                SetColor(rtb, Color.DarkGreen);
+                string strBytes = GetStrBytes(bytes);
+                rtb.AppendText(strBytes.PadRight(bytesLength * 2 + 1));
+            }
+            SetColor(rtb, Color.Blue);
+            rtb.AppendText(System.Reflection.Emit.OpCodes.Ldstr.ToString());
+            SetColor(rtb, Color.DarkCyan);
+            rtb.AppendText(" \"" + value + "\"");
+            rtb.AppendText(System.Environment.NewLine);
         }
         static void AppendLine(RichTextBox rtb, string line, byte[] bytes, int bytesLength, string keyword, bool showOffset, bool showBytes) {
             if(showOffset) {
@@ -86,8 +106,40 @@ namespace ILReader.Visualizer.UI {
             SetColor(rtb, Color.Blue);
             rtb.AppendText(keyword);
             SetColor(rtb, rtb.ForeColor);
-            rtb.AppendText(line.Substring(line.IndexOf(keyword) + keyword.Length));
+            var value = line.Substring(line.IndexOf(keyword) + keyword.Length);
+            AppendHighlight(rtb, value, Color.DarkBlue, rtb.ForeColor, Color.Gray);
             rtb.AppendText(System.Environment.NewLine);
+        }
+        static void AppendHighlight(RichTextBox rtb, string codeLine, Color keywordColor, Color textColor) {
+            codeLine.Highlight(
+                keyword =>
+                {
+                    SetColor(rtb, keywordColor);
+                    rtb.AppendText(keyword);
+                },
+                text =>
+                {
+                    SetColor(rtb, textColor);
+                    rtb.AppendText(text);
+                });
+        }
+        static void AppendHighlight(RichTextBox rtb, string codeLine, Color keywordColor, Color textColor, Color specialColor) {
+            codeLine.Highlight(
+                keyword =>
+                {
+                    SetColor(rtb, keywordColor);
+                    rtb.AppendText(keyword);
+                },
+                text =>
+                {
+                    SetColor(rtb, textColor);
+                    rtb.AppendText(text);
+                },
+                special =>
+                {
+                    SetColor(rtb, specialColor);
+                    rtb.AppendText(special);
+                });
         }
         static void SetColor(RichTextBox rtb, Color color) {
             rtb.SelectionStart = rtb.TextLength;
@@ -163,5 +215,51 @@ namespace ILReader.Visualizer.UI {
         }
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
+    }
+    static class HightlightCodeExtension {
+        static readonly string[] DefaultKeywords = new string[] { 
+            "void", "instance", "static", "noinlining", "il", "dynamic", ".ctor",
+            "object", "byte", "bool", "char", "int", "long", "decimal", "float", "double", "string", 
+        };
+
+        static internal void Highlight(this string codeLine, Action<string> appendKeyword, Action<string> append, Action<string> appendSpecial = null) {
+            var words = codeLine.ToLowerInvariant().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var keywords = Array.FindAll(words,
+                w => (Array.IndexOf(DefaultKeywords, w.ToLowerInvariant()) != -1 ||
+                    w.ToLowerInvariant().Contains("@this") ||
+                    w.ToLowerInvariant().Contains("@arg.") ||
+                    w.ToLowerInvariant().Contains("@loc."))
+                );
+            int startIndex = 0; int endIndex = 0;
+            if(keywords.Length > 0) {
+                var line = codeLine.ToLowerInvariant();
+                for(int i = 0; i < keywords.Length; i++) {
+                    string keyword = keywords[i];
+                    int index = FindWord(line, startIndex, keyword);
+                    if(index != -1 && index - endIndex > 0)
+                        append(codeLine.Substring(endIndex, index - endIndex));
+                    if(index != -1) {
+                        endIndex = index + keyword.Length;
+                        startIndex = endIndex;
+                    }
+                    if(keyword.StartsWith("(@")) {
+                        append("(");
+                        (appendSpecial ?? appendKeyword)(keyword.Substring(1, keyword.Length - 1));
+                    }
+                    else appendKeyword(keyword);
+                }
+                if(codeLine.Length - endIndex > 0)
+                    append(codeLine.Substring(endIndex, codeLine.Length - endIndex));
+            }
+            else append(codeLine);
+        }
+        static int FindWord(string line, int startIndex, string keyword) {
+            int index = line.IndexOf(keyword, startIndex, StringComparison.InvariantCulture);
+            if(index < 0)
+                return -1;
+            bool fromStart = (index > 0 && line[index - 1] == ' ') || (index == 0);
+            bool fromEnd = (index + keyword.Length < line.Length && line[index + keyword.Length] == ' ') || (index + keyword.Length == line.Length);
+            return (fromStart || fromEnd) ? index : FindWord(line, index + keyword.Length, keyword);
+        }
     }
 }

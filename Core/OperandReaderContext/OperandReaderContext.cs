@@ -61,5 +61,10 @@
             return GetOrCache(signatureTokens, signatureToken, t => module.ResolveSignature(t));
         }
         #endregion Resolve
+        protected override string VariableToString(object variable) {
+            var variableInfo = (LocalVariableInfo)variable;
+            string variableStr = TypeToString(variableInfo.LocalType) + " (" + variableInfo.LocalIndex.ToString() + ")";
+            return variableInfo.IsPinned ? variableStr + " (pinned)" : variableStr;
+        }
     }
 }

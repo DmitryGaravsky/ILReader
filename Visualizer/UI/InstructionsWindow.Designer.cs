@@ -28,18 +28,21 @@
             this.rbDetailView = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.imgBox = new System.Windows.Forms.PictureBox();
             this.cbShowBytes = new System.Windows.Forms.CheckBox();
             this.cbShowOffset = new System.Windows.Forms.CheckBox();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.codeBox = new ILReader.Visualizer.UI.CodeBox();
             this.detailBox = new ILReader.Visualizer.UI.Controls.DetailBox();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imgBox)).BeginInit();
             this.SuspendLayout();
             // 
             // rbTextView
             // 
             this.rbTextView.AutoSize = true;
             this.rbTextView.Checked = true;
-            this.rbTextView.Location = new System.Drawing.Point(51, 12);
+            this.rbTextView.Location = new System.Drawing.Point(81, 12);
             this.rbTextView.Name = "rbTextView";
             this.rbTextView.Size = new System.Drawing.Size(46, 17);
             this.rbTextView.TabIndex = 1;
@@ -51,7 +54,7 @@
             // rbDetailView
             // 
             this.rbDetailView.AutoSize = true;
-            this.rbDetailView.Location = new System.Drawing.Point(103, 12);
+            this.rbDetailView.Location = new System.Drawing.Point(133, 12);
             this.rbDetailView.Name = "rbDetailView";
             this.rbDetailView.Size = new System.Drawing.Size(57, 17);
             this.rbDetailView.TabIndex = 2;
@@ -62,7 +65,8 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 14);
+            this.label1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label1.Location = new System.Drawing.Point(42, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(33, 13);
             this.label1.TabIndex = 3;
@@ -71,6 +75,7 @@
             // panel1
             // 
             this.panel1.AutoSize = true;
+            this.panel1.Controls.Add(this.imgBox);
             this.panel1.Controls.Add(this.cbShowBytes);
             this.panel1.Controls.Add(this.cbShowOffset);
             this.panel1.Controls.Add(this.rbTextView);
@@ -82,6 +87,18 @@
             this.panel1.Padding = new System.Windows.Forms.Padding(8);
             this.panel1.Size = new System.Drawing.Size(384, 40);
             this.panel1.TabIndex = 5;
+            // 
+            // imgBox
+            // 
+            this.imgBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.imgBox.Dock = System.Windows.Forms.DockStyle.Left;
+            this.imgBox.Location = new System.Drawing.Point(8, 8);
+            this.imgBox.Name = "imgBox";
+            this.imgBox.Size = new System.Drawing.Size(24, 24);
+            this.imgBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.imgBox.TabIndex = 6;
+            this.imgBox.TabStop = false;
+            this.imgBox.Click += new System.EventHandler(this.imgBox_Click);
             // 
             // cbShowBytes
             // 
@@ -111,9 +128,16 @@
             this.cbShowOffset.UseVisualStyleBackColor = true;
             this.cbShowOffset.CheckedChanged += new System.EventHandler(this.cbShowOffset_CheckedChanged);
             // 
+            // imageList1
+            // 
+            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            // 
             // codeBox
             // 
             this.codeBox.BackColor = System.Drawing.SystemColors.Window;
+            this.codeBox.CodeSize = 1;
             this.codeBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.codeBox.Location = new System.Drawing.Point(0, 40);
             this.codeBox.Name = "codeBox";
@@ -151,6 +175,7 @@
             this.Load += new System.EventHandler(this.window_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imgBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -166,5 +191,7 @@
         private System.Windows.Forms.CheckBox cbShowOffset;
         private Controls.DetailBox detailBox;
         private System.Windows.Forms.CheckBox cbShowBytes;
+        private System.Windows.Forms.PictureBox imgBox;
+        private System.Windows.Forms.ImageList imageList1;
     }
 }

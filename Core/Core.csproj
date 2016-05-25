@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,7 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -40,7 +40,7 @@
     <DefineConstants>DEBUG;DEBUGTEST;TRACE</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -55,28 +55,29 @@
     <Reference Include="nunit.framework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\Configuration.cs" />
-    <Compile Include="Dump\InstructionReaderDump.cs" />
-    <Compile Include="Dump\ISupportDump.cs" />
-    <Compile Include="Configuration\IILReaderConfiguration.cs" />
-    <Compile Include="SignatureReader\MetadataItem.cs" />
-    <Compile Include="SignatureReader\SignatureReader.cs" />
-    <Compile Include="Tests\LocalSignatureReader.cs" />
-    <Compile Include="Utils\Dump\DumpHelper.cs" />
-    <Compile Include="Dump\ILReaderDump.cs" />
-    <Compile Include="ILReader\IILReader.cs" />
-    <Compile Include="ILReader\IILReaderFactory.cs" />
-    <Compile Include="ILReader\InstructionReader.cs" />
-    <Compile Include="ILReader\ILReaderFactory.cs" />
-    <Compile Include="Utils\LazyRef.cs" />
-    <Compile Include="OperandReaderContext\OperandReaderContext_Real.cs" />
-    <Compile Include="OperandReaderContext\OperandReaderContext_Dump.cs" />
-    <Compile Include="OperandReaderContext\OperandReaderContext_DynamicMethod.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BinaryReader\BinaryReader.cs" />
     <Compile Include="BinaryReader\IBinaryReader.cs" />
+    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\IILReaderConfiguration.cs" />
+    <Compile Include="Dump\ILReaderDump.cs" />
+    <Compile Include="Dump\ISupportDump.cs" />
+    <Compile Include="Dump\InstructionReaderDump.cs" />
+    <Compile Include="ILReader\IILReader.cs" />
+    <Compile Include="ILReader\IILReaderFactory.cs" />
+    <Compile Include="ILReader\ILReaderFactory.cs" />
+    <Compile Include="ILReader\InstructionReader.cs" />
     <Compile Include="OpCodeReader\OpCodeReader.cs" />
+    <Compile Include="OperandReaderContext\IOperandReaderContext.cs" />
+    <Compile Include="OperandReaderContext\OperandReaderContext.cs" />
+    <Compile Include="OperandReaderContext\OperandReaderContext_Dump.cs" />
+    <Compile Include="OperandReaderContext\OperandReaderContext_DynamicMethod.cs" />
+    <Compile Include="OperandReaderContext\OperandReaderContext_Real.cs" />
+    <Compile Include="OperandReader\IOperandReader.cs" />
+    <Compile Include="OperandReader\OperandReader.cs" />
     <Compile Include="OperandReader\Readers\16bit\InlineVar.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineBrTarget.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineField.cs" />
+    <Compile Include="OperandReader\Readers\32bit\InlineI.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineMethod.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineSig.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineString.cs" />
@@ -89,20 +90,19 @@
     <Compile Include="OperandReader\Readers\8bit\ShortInlineBrTarget.cs" />
     <Compile Include="OperandReader\Readers\8bit\ShortInlineI.cs" />
     <Compile Include="OperandReader\Readers\8bit\ShortInlineVar.cs" />
-    <Compile Include="OperandReader\Readers\32bit\InlineBrTarget.cs" />
-    <Compile Include="OperandReader\Readers\32bit\InlineField.cs" />
-    <Compile Include="OperandReader\Readers\32bit\InlineI.cs" />
     <Compile Include="OperandReader\Readers\InlineNone.cs" />
-    <Compile Include="OperandReader\IOperandReader.cs" />
-    <Compile Include="OperandReader\OperandReader.cs" />
-    <Compile Include="OperandReaderContext\IOperandReaderContext.cs" />
-    <Compile Include="OperandReaderContext\OperandReaderContext.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SignatureReader\MetadataItem.cs" />
+    <Compile Include="SignatureReader\SignatureReader.cs" />
+    <Compile Include="Utils\Dump\DumpHelper.cs" />
+    <Compile Include="Utils\LazyRef.cs" />
     <Compile Include="Utils\Monads\MayBe.cs" />
     <Compile Include="Utils\RuntimeTypes\RTTypes.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
     <Compile Include="Tests\BinaryReader.cs" />
     <Compile Include="Tests\ILReader.cs" />
+    <Compile Include="Tests\LocalSignatureReader.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -8,8 +8,8 @@ namespace ILReader.Analyzer {
         protected ILPattern(params Func<IInstruction, bool>[] matches)
             : base(matches) {
         }
-        public bool Match(IILReader reader) {
-            return Match(reader.Where(i => i.OpCode != OpCodes.Nop).ToArray());
+        public bool Match(IILReader reader, bool skinNops = true) {
+            return Match((skinNops ? reader.Where(i => i.OpCode != OpCodes.Nop) : reader).ToArray(), StartIndex + 1);
         }
     }
 }
