@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Pattern.cs" />
     <Compile Include="Patterns\Boxing\Box.cs" />
+    <Compile Include="Patterns\Call\Call.cs" />
     <Compile Include="Patterns\Nop.cs" />
     <Compile Include="Patterns\Boxing\Unbox.cs" />
     <Compile Include="Patterns\ILPattern.cs" />

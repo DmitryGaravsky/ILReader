@@ -23,8 +23,10 @@ namespace ILReader.Visualizer.UI {
                     return;
                 if(rtbCode.TextLength > 0)
                     SetFont(rtbCode, value);
-                else
+                else {
+                    currentFontSize = fontSizes[value];
                     codeSize = value;
+                }
             }
         }
         public CodeBox() {
@@ -44,13 +46,13 @@ namespace ILReader.Visualizer.UI {
             }
             int bytesLength = instructions.Any() ? instructions.Max(i => i.Bytes.Length) : 0;
             foreach(var instruction in instructions) {
+                rtbCode.SelectionFont = GetFont(CodeSize, currentFontSize);
                 if(instruction.OpCode == System.Reflection.Emit.OpCodes.Ldstr)
                     AppendLdSrtLine(rtbCode, instruction.Text, instruction.Bytes, bytesLength, (string)instruction.Operand, showOffset, showBytes);
                 else
                     AppendLine(rtbCode, instruction.Text, instruction.Bytes, bytesLength, instruction.OpCode.ToString(), showOffset, showBytes);
             }
             rtbCode.EndUpdate();
-            //
             if(codeSize.HasValue) {
                 SetFont(rtbCode, codeSize.Value);
                 codeSize = null;
@@ -58,9 +60,11 @@ namespace ILReader.Visualizer.UI {
         }
         void AppendLines(IEnumerable<Readers.IMetadataItem> metadata, int offset = 0) {
             foreach(var meta in metadata) {
+                rtbCode.SelectionFont = GetFont(CodeSize, currentFontSize);
                 if(meta.HasChildren) {
                     AppendLine(rtbCode, meta.Name, "(" + System.Environment.NewLine, offset, false);
                     AppendLines(meta.Children, offset + 4);
+                    rtbCode.SelectionFont = GetFont(CodeSize, currentFontSize);
                     AppendLine(rtbCode, null, ")", offset);
                 }
                 else AppendLine(rtbCode, meta.Name, meta.Value, offset);
@@ -156,10 +160,13 @@ namespace ILReader.Visualizer.UI {
         void SetFont(RichTextBox rtb, int index) {
             if(index != -1) {
                 currentFontSize = fontSizes[index];
-                if(fonts[index] == null)
-                    fonts[index] = new System.Drawing.Font(fonts[DefaultFontIndex].FontFamily, currentFontSize, FontStyle.Regular, GraphicsUnit.Point, 0);
-                SetFont(rtb, fonts[index]);
+                SetFont(rtb, GetFont(index, currentFontSize));
             }
+        }
+        static Font GetFont(int index, float size) {
+            if(fonts[index] == null)
+                fonts[index] = new System.Drawing.Font(fonts[DefaultFontIndex].FontFamily, size, FontStyle.Regular, GraphicsUnit.Point, 0);
+            return fonts[index];
         }
         static string GetStrBytes(byte[] bytes) {
             string[] sBytes = new string[bytes.Length];

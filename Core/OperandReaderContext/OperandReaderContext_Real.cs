@@ -119,6 +119,9 @@ namespace ILReader.Context {
                         name = declaringType + "." + name;
                     return returnType + " " + name;
                 }
+                var cInfo = method as ConstructorInfo;
+                if(cInfo != null)
+                    return declaringType;
             }
             return method.ToString();
         }
