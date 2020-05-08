@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{2FDE2DC0-F1DC-4090-84CD-58C0204CC63D}"
 EndProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{929CB683-D
 	ProjectSection(SolutionItems) = preProject
 		Libs\FastAccessors.dll = Libs\FastAccessors.dll
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebuggerVisualizer.16.0", "DebuggerVisualizer.16.0\DebuggerVisualizer.16.0.csproj", "{7EA5EBE7-7261-48F2-B63D-94765F7B59E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,8 +57,17 @@ Global
 		{AA46CCAF-97C8-4D9F-B675-B6ECB0DCC1AF}.DebugTest|Any CPU.Build.0 = DebugTest|Any CPU
 		{AA46CCAF-97C8-4D9F-B675-B6ECB0DCC1AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA46CCAF-97C8-4D9F-B675-B6ECB0DCC1AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EA5EBE7-7261-48F2-B63D-94765F7B59E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EA5EBE7-7261-48F2-B63D-94765F7B59E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EA5EBE7-7261-48F2-B63D-94765F7B59E6}.DebugTest|Any CPU.ActiveCfg = DebugTest|Any CPU
+		{7EA5EBE7-7261-48F2-B63D-94765F7B59E6}.DebugTest|Any CPU.Build.0 = DebugTest|Any CPU
+		{7EA5EBE7-7261-48F2-B63D-94765F7B59E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EA5EBE7-7261-48F2-B63D-94765F7B59E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {48A1243E-D4B7-41EB-B57D-9A4751525D70}
 	EndGlobalSection
 EndGlobal

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AA46CCAF-97C8-4D9F-B675-B6ECB0DCC1AF}</ProjectGuid>
+    <ProjectGuid>{7EA5EBE7-7261-48F2-B63D-94765F7B59E6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ILReader.DebuggerVisualizer</RootNamespace>
-    <AssemblyName>DebuggerVisualizer.14.0</AssemblyName>
+    <AssemblyName>DebuggerVisualizer.16.0</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ErrorReport>prompt</ErrorReport>
@@ -38,7 +38,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -68,11 +68,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)FastAccessors.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y
-xcopy "$(TargetDir)ILReader.Core.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y
-xcopy "$(TargetDir)ILReader.Visualizer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y
-xcopy "$(TargetDir)ILReader.Analyzer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y
-xcopy "$(TargetDir)DebuggerVisualizer.14.0.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2015\Visualizers" /y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)FastAccessors.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2019\Visualizers" /y
+xcopy "$(TargetDir)ILReader.Core.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2019\Visualizers" /y
+xcopy "$(TargetDir)ILReader.Visualizer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 20195\Visualizers" /y
+xcopy "$(TargetDir)ILReader.Analyzer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2019\Visualizers" /y
+xcopy "$(TargetDir)DebuggerVisualizer.16.0.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2019\Visualizers" /y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
