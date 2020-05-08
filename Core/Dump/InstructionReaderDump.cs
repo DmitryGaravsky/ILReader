@@ -103,7 +103,7 @@ namespace ILReader.Dump {
         }
         #endregion Properties
         class TokenLookup<T> : ITokenLookup<T> {
-            internal readonly IDictionary<int, T> tokens = new Dictionary<int, T>();
+            internal readonly Dictionary<int, T> tokens = new Dictionary<int, T>();
             public T this[int token] {
                 get {
                     T value;

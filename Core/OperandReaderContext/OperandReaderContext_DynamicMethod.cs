@@ -4,7 +4,7 @@ namespace ILReader.Context {
     using System.Reflection.Emit;
     using ILReader.Monads;
 
-    class OperandReaderContext_DynamicMethod : OperandReaderContextReal, IOperandReaderContext {
+    sealed class OperandReaderContext_DynamicMethod : OperandReaderContextReal, IOperandReaderContext {
         readonly object resolver;
         RTTypes.TokenResolver resolveToken;
         RTTypes.StringResolver resolveString;

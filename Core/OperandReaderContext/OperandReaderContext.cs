@@ -3,12 +3,12 @@
     using System.Linq;
     using System.Reflection;
 
-    class OperandReaderContext : OperandReaderContextReal, IOperandReaderContext {
+    sealed class OperandReaderContext : OperandReaderContextReal, IOperandReaderContext {
         readonly Module module;
         readonly Type[] methodArguments;
         readonly Type[] typeArguments;
         public OperandReaderContext(MethodBase method, MethodBody methodBody) {
-            System.Runtime.CompilerServices.RuntimeHelpers.PrepareMethod(method.MethodHandle);
+            RTTypes.TryPrepareMethod(method);
             this.module = method.Module;
             this.name = method.Name;
             //
@@ -38,6 +38,7 @@
             //
             this.ILBytes = (methodBody != null) ? methodBody.GetILAsByteArray() : null;
         }
+        //
         public OperandReaderContextType Type {
             get { return OperandReaderContextType.Method; }
         }

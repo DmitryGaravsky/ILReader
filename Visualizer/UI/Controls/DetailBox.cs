@@ -45,7 +45,7 @@ namespace ILReader.Visualizer.UI.Controls {
                 if(bytes != null) {
                     string[] sBytes = new string[bytes.Length];
                     for(int i = 0; i < sBytes.Length; i++)
-                        sBytes[i] = string.Format("{0:X2}", bytes[i]);
+                        sBytes[i] = bytes[i].ToString("X2");
                     e.Value = string.Join(" ", sBytes);
                 }
             }
@@ -61,7 +61,7 @@ namespace ILReader.Visualizer.UI.Controls {
             try { System.Diagnostics.Process.Start(uri.AbsoluteUri); }
             catch { }
         }
-        static IDictionary<System.Reflection.Emit.OpCode, string> opCodeNames;
+        static Dictionary<System.Reflection.Emit.OpCode, string> opCodeNames;
         static string GetOpcodeName(System.Reflection.Emit.OpCode opCode) {
             if(opCodeNames == null) {
                 opCodeNames = new Dictionary<System.Reflection.Emit.OpCode, string>();

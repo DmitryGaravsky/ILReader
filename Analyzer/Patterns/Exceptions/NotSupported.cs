@@ -8,7 +8,7 @@ namespace ILReader.Analyzer {
         NotSupported()
             : base(
             i => i.OpCode == OpCodes.Ldstr,
-            i => i.OpCode == OpCodes.Newobj && ExceptionAnalizer.IsException<System.NotSupportedException>(i.Operand as ConstructorInfo),
+            i => i.OpCode == OpCodes.Newobj && ExceptionAnalyzer.IsException<System.NotSupportedException>(i.Operand as ConstructorInfo),
             i => i.OpCode == OpCodes.Throw) {
         }
     }

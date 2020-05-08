@@ -6,6 +6,10 @@
     using ILReader.Readers;
 
     public static class Configuration {
+        public static IILReaderConfiguration Standard {
+            get { return StandardConfiguration.Default; }
+        }
+        //
         public static IILReaderConfiguration Resolve(System.IO.Stream dump) {
             return DumpConfiguration.Default;
         }
@@ -82,31 +86,31 @@
             throw new System.NotImplementedException();
         }
     }
-    class StandardConfiguration : RealConfiguration {
-        protected override Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase) {
+    sealed class StandardConfiguration : RealConfiguration {
+        protected sealed override Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase) {
             return new Context.OperandReaderContext(methodBase, methodBase.GetMethodBody());
         }
         static readonly internal IILReaderConfiguration Default = new StandardConfiguration();
     }
-    class DynamicMethodConfiguration : RealConfiguration {
-        protected override Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase) {
+    sealed class DynamicMethodConfiguration : RealConfiguration {
+        protected sealed override Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase) {
             return new Context.OperandReaderContext_DynamicMethod((DynamicMethod)methodBase);
         }
         static readonly internal IILReaderConfiguration Default = new DynamicMethodConfiguration();
     }
-    class RTDynamicMethodConfiguration : RealConfiguration {
-        protected override Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase) {
+    sealed class RTDynamicMethodConfiguration : RealConfiguration {
+        protected sealed override Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase) {
             var ownerMethod = RTTypes.GetOwnerDynamicMethod(methodBase);
             return new Context.OperandReaderContext_DynamicMethod(ownerMethod);
         }
         static readonly internal IILReaderConfiguration Default = new RTDynamicMethodConfiguration();
     }
     //
-    class DumpConfiguration : ConfigurationBase {
-        protected override Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase) {
+    sealed class DumpConfiguration : ConfigurationBase {
+        protected sealed override Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase) {
             throw new System.NotImplementedException();
         }
-        protected override Context.IOperandReaderContext CreateOperandReaderContext(System.IO.Stream dump) {
+        protected sealed override Context.IOperandReaderContext CreateOperandReaderContext(System.IO.Stream dump) {
             var ilReaderDump = new Dump.InstructionReaderDump(dump);
             return new Context.OperandReaderContextDump(ilReaderDump);
         }

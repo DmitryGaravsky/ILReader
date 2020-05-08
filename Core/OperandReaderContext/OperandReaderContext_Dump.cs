@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 namespace ILReader.Context {
-    class OperandReaderContextDump : IOperandReaderContext {
+    sealed class OperandReaderContextDump : IOperandReaderContext {
         readonly Dump.IILReaderDump dump;
         public OperandReaderContextDump(Dump.IILReaderDump dump) {
             this.dump = dump;

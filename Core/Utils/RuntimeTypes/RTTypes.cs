@@ -1,10 +1,11 @@
 ﻿namespace ILReader {
     using System;
-    using System.Reflection.Emit;
-    using BF = System.Reflection.BindingFlags;
-    using FastAccessors.Monads;
-    using System.Reflection;
     using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Reflection.Emit;
+    using System.Runtime.CompilerServices;
+    using FastAccessors.Monads;
+    using BF = System.Reflection.BindingFlags;
 
     static class RTTypes {
         internal static readonly Type DynamicMethodType = typeof(DynamicMethod);
@@ -164,6 +165,26 @@
                            ).Compile();
             }
             return (type, fHandle) => getFieldFromHandles(type, fHandle);
+        }
+        //
+        public static void TryPrepareMethod(MethodBase method) {
+            try {
+                if(method.IsGenericMethod || method.IsGenericMethodDefinition)
+                    return;
+                var mInfo = method as MethodInfo;
+                if(mInfo != null) {
+                    if(mInfo.ReturnType.IsGenericParameter || mInfo.ReturnType.IsGenericTypeDefinition)
+                        return;
+                    var methodParams = method.GetParameters();
+                    for(int i = 0; i < methodParams.Length; i++) {
+                        if(methodParams[i].ParameterType.IsGenericParameter ||
+                            methodParams[i].ParameterType.IsGenericTypeDefinition)
+                            return;
+                    }
+                }
+                RuntimeHelpers.PrepareMethod(method.MethodHandle);
+            }
+            catch { }
         }
     }
 }

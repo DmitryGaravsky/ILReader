@@ -8,7 +8,7 @@
         NotImplemented()
             : base(
             i => i.OpCode == OpCodes.Ldstr,
-            i => i.OpCode == OpCodes.Newobj && ExceptionAnalizer.IsException<System.NotImplementedException>(i.Operand as ConstructorInfo),
+            i => i.OpCode == OpCodes.Newobj && ExceptionAnalyzer.IsException<System.NotImplementedException>(i.Operand as ConstructorInfo),
             i => i.OpCode == OpCodes.Throw) {
         }
     }

@@ -67,3 +67,7 @@ if (pattern.Match(reader)) {
     // do something
 }
 ```
+
+## Real usage
+
+[MSIL-level boxing detector tool for .Net](https://github.com/DmitryGaravsky/MSIL-Boxing-Detector)

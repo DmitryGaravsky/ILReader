@@ -3,8 +3,8 @@
     using System.Reflection.Emit;
 
     static class OperandReader {
-        static IDictionary<OperandType, IOperandReader> operandReadersCache = new Dictionary<OperandType, IOperandReader>();
-        static IDictionary<OperandType, IOperandReader> argumentReadersCache = new Dictionary<OperandType, IOperandReader>();
+        static Dictionary<OperandType, IOperandReader> operandReadersCache = new Dictionary<OperandType, IOperandReader>();
+        static Dictionary<OperandType, IOperandReader> argumentReadersCache = new Dictionary<OperandType, IOperandReader>();
         static OperandReader() {
             // Operand Readers
             operandReadersCache.Add(OperandType.InlineNone, new InlineNoneOperandReader());

@@ -55,13 +55,13 @@ namespace ILReader.Context {
             return ILBytes ?? EmptyIL;
         }
         // Tokens
-        protected readonly IDictionary<int, MethodBase> methodTokens = new Dictionary<int, MethodBase>();
-        protected readonly IDictionary<int, FieldInfo> fieldTokens = new Dictionary<int, FieldInfo>();
-        protected readonly IDictionary<int, Type> typeTokens = new Dictionary<int, Type>();
-        protected readonly IDictionary<int, MemberInfo> memberTokens = new Dictionary<int, MemberInfo>();
-        protected readonly IDictionary<int, string> stringTokens = new Dictionary<int, string>();
-        protected readonly IDictionary<int, byte[]> signatureTokens = new Dictionary<int, byte[]>();
-        protected static T GetOrCache<T>(IDictionary<int, T> tokens, int token, Func<int, T> getFunc) {
+        protected readonly Dictionary<int, MethodBase> methodTokens = new Dictionary<int, MethodBase>();
+        protected readonly Dictionary<int, FieldInfo> fieldTokens = new Dictionary<int, FieldInfo>();
+        protected readonly Dictionary<int, Type> typeTokens = new Dictionary<int, Type>();
+        protected readonly Dictionary<int, MemberInfo> memberTokens = new Dictionary<int, MemberInfo>();
+        protected readonly Dictionary<int, string> stringTokens = new Dictionary<int, string>();
+        protected readonly Dictionary<int, byte[]> signatureTokens = new Dictionary<int, byte[]>();
+        protected static T GetOrCache<T>(Dictionary<int, T> tokens, int token, Func<int, T> getFunc) {
             T result;
             if(!tokens.TryGetValue(token, out result)) {
                 result = getFunc(token);
@@ -88,7 +88,7 @@ namespace ILReader.Context {
         protected virtual string VariableToString(object variable) {
             return variable.ToString();
         }
-        static IDictionary<Type, string> typeAliases = new Dictionary<Type, string> { 
+        static Dictionary<Type, string> typeAliases = new Dictionary<Type, string> { 
             { typeof(void), "void" },
             { typeof(object), "object" },
             { typeof(string), "string" },

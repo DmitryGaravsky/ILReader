@@ -50,6 +50,9 @@
   <ItemGroup>
     <Compile Include="Pattern.cs" />
     <Compile Include="Patterns\Boxing\Box.cs" />
+    <Compile Include="Patterns\Boxing\EnumHasFlagBoxing.cs" />
+    <Compile Include="Patterns\Boxing\StringConcatBoxing.cs" />
+    <Compile Include="Patterns\Boxing\StringFormatBoxing.cs" />
     <Compile Include="Patterns\Call\Call.cs" />
     <Compile Include="Patterns\Nop.cs" />
     <Compile Include="Patterns\Boxing\Unbox.cs" />
@@ -57,7 +60,7 @@
     <Compile Include="Patterns\Events\EventAnalyzer.cs" />
     <Compile Include="Patterns\Events\Subscribe.cs" />
     <Compile Include="Patterns\Events\Unsubscribe.cs" />
-    <Compile Include="Patterns\Exceptions\ExceptionAnalizer.cs" />
+    <Compile Include="Patterns\Exceptions\ExceptionAnalyzer.cs" />
     <Compile Include="Patterns\Exceptions\NotImplemented.cs" />
     <Compile Include="Patterns\Exceptions\NotSupported.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

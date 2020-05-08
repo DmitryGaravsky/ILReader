@@ -171,7 +171,7 @@ namespace ILReader.Visualizer.UI {
         static string GetStrBytes(byte[] bytes) {
             string[] sBytes = new string[bytes.Length];
             for(int i = 0; i < sBytes.Length; i++)
-                sBytes[i] = string.Format("{0:X2}", bytes[i]);
+                sBytes[i] = bytes[i].ToString("X2");
             return string.Join(string.Empty, sBytes);
         }
         void contextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {

@@ -2,7 +2,7 @@ namespace ILReader.Analyzer {
     using System;
     using System.Reflection;
 
-    static class ExceptionAnalizer {
+    static class ExceptionAnalyzer {
         static readonly Type ExceptionType = typeof(System.Exception);
         internal static bool IsException(ConstructorInfo cInfo) {
             return (cInfo != null) && ExceptionType.IsAssignableFrom(cInfo.DeclaringType);

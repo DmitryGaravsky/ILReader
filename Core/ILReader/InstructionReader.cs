@@ -115,13 +115,13 @@
                     if(rawOperand != null) {
                         if(argIndex.HasValue) {
                             if(argIndex.Value > 0)
-                                return string.Format("IL_{0:X4}: {1}   (@arg.{2} {3})", Offset, OpCode.ToString(), argIndex.Value.ToString(), rawOperand.ToString().TrimEnd());
+                                return string.Format("IL_{0}: {1}   (@arg.{2} {3})", Offset.ToString("X4"), OpCode.ToString(), argIndex.Value.ToString(), rawOperand.ToString().TrimEnd());
                             else
-                                return string.Format("IL_{0:X4}: {1}   (@this {2})", Offset, OpCode.ToString(), rawOperand.ToString().TrimEnd());
+                                return string.Format("IL_{0}: {1}   (@this {2})", Offset.ToString("X4"), OpCode.ToString(), rawOperand.ToString().TrimEnd());
                         }
-                        return string.Format("IL_{0:X4}: {1} ({2})", Offset, OpCode.ToString(), rawOperand.ToString().TrimEnd());
+                        return string.Format("IL_{0}: {1} ({2})", Offset.ToString("X4"), OpCode.ToString(), rawOperand.ToString().TrimEnd());
                     }
-                    else return string.Format("IL_{0:X4}: {1}", Offset, OpCode.ToString());
+                    else return string.Format("IL_{0}: {1}", Offset.ToString("X4"), OpCode.ToString());
                 }
                 else {
                     string suffix = string.Empty;
@@ -130,7 +130,7 @@
                     if(locIndex.HasValue)
                         suffix = string.Format(" (@loc.{0} {1})", locIndex.Value.ToString(), (rawOperand ?? Operand).ToString().TrimEnd());
                     //
-                    return string.Format("IL_{0:X4}: {1} {2}", Offset, OpCode.ToString(), Operand.ToString()) + suffix;
+                    return string.Format("IL_{0}: {1} {2}", Offset.ToString("X4"), OpCode.ToString(), Operand.ToString()) + suffix;
                 }
             }
         }

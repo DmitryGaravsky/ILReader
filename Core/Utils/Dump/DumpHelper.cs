@@ -41,21 +41,21 @@ using System;
                 Write(toString(cache[i]), dump);
         }
         //
-        internal static void Write<T>(IDictionary<int, T> cache, System.IO.Stream dump, Func<T, string> toString) {
+        internal static void Write<T>(Dictionary<int, T> cache, System.IO.Stream dump, Func<T, string> toString) {
             Write(cache.Count, dump);
             foreach(var item in cache) {
                 Write(item.Key, dump);
                 Write(toString(item.Value), dump);
             }
         }
-        internal static void Write(IDictionary<int, string> cache, System.IO.Stream dump) {
+        internal static void Write(Dictionary<int, string> cache, System.IO.Stream dump) {
             Write(cache.Count, dump);
             foreach(var item in cache) {
                 Write(item.Key, dump);
                 Write(item.Value, dump);
             }
         }
-        internal static void Write(IDictionary<int, byte[]> cache, System.IO.Stream dump) {
+        internal static void Write(Dictionary<int, byte[]> cache, System.IO.Stream dump) {
             Write(cache.Count, dump);
             foreach(var item in cache) {
                 Write(item.Key, dump);
@@ -81,12 +81,12 @@ using System;
             for(int i = 0; i < array.Length; i++)
                 array[i] = GetString(ReadBytes(dump));
         }
-        internal static void Read(IDictionary<int, string> cache, System.IO.Stream dump) {
+        internal static void Read(Dictionary<int, string> cache, System.IO.Stream dump) {
             int count = ReadInt(dump);
             for(int i = 0; i < count; i++)
                 cache.Add(ReadInt(dump), GetString(ReadBytes(dump)));
         }
-        internal static void Read(IDictionary<int, byte[]> cache, System.IO.Stream dump) {
+        internal static void Read(Dictionary<int, byte[]> cache, System.IO.Stream dump) {
             int count = ReadInt(dump);
             for(int i = 0; i < count; i++)
                 cache.Add(ReadInt(dump), ReadBytes(dump));
