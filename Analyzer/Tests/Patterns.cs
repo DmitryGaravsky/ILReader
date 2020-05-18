@@ -88,6 +88,9 @@ namespace ILReader.Analyzer.Tests {
             public bool Stub3(State state) {
                 return (state & State.One) == State.One;
             }
+            public string Stub4(State state) {
+                return state.ToString();
+            }
         }
         #endregion Test Classes
         [Test]
@@ -142,7 +145,7 @@ namespace ILReader.Analyzer.Tests {
         }
         [Test]
         public void Test_EnumHasFlagBoxing() {
-            var pattern = Analyzer.EnumHasFlagBoxing.Instance;
+            var pattern = Analyzer.EnumMethodBoxing.Instance;
             var reader = GetReader(typeof(EnumHasFlag).GetMethod("Stub1"));
             Assert.IsFalse(pattern.Match(reader));
             Assert.IsFalse(pattern.Success);
@@ -156,6 +159,23 @@ namespace ILReader.Analyzer.Tests {
             Assert.IsFalse(pattern.Match(reader));
             Assert.AreEqual(-1, pattern.StartIndex);
             Assert.AreEqual(0, pattern.Result.Length);
+            reader = GetReader(typeof(EnumHasFlag).GetMethod("Stub4"));
+            Assert.IsFalse(pattern.Match(reader));
+            Assert.AreEqual(-1, pattern.StartIndex);
+            Assert.AreEqual(0, pattern.Result.Length);
+        }
+        [Test]
+        public void Test_EnumToStringBoxing() {
+            var pattern = Analyzer.EnumToStringBoxing.Instance;
+            var reader = GetReader(typeof(EnumHasFlag).GetMethod("Stub1"));
+            Assert.IsFalse(pattern.Match(reader));
+            Assert.IsFalse(pattern.Success);
+            Assert.AreEqual(-1, pattern.StartIndex);
+            Assert.AreEqual(0, pattern.Result.Length);
+            reader = GetReader(typeof(EnumHasFlag).GetMethod("Stub4"));
+            Assert.IsTrue(pattern.Match(reader));
+            Assert.AreEqual(1, pattern.StartIndex);
+            Assert.AreEqual(2, pattern.Result.Length);
         }
         static IILReader GetReader(System.Reflection.MethodBase method) {
             return ILReader.Configuration.Standard.GetReader(method);

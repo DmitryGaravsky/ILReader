@@ -50,7 +50,8 @@
   <ItemGroup>
     <Compile Include="Pattern.cs" />
     <Compile Include="Patterns\Boxing\Box.cs" />
-    <Compile Include="Patterns\Boxing\EnumHasFlagBoxing.cs" />
+    <Compile Include="Patterns\Boxing\EnumMethodBoxing.cs" />
+    <Compile Include="Patterns\Boxing\EnumToStringBoxing.cs" />
     <Compile Include="Patterns\Boxing\StringConcatBoxing.cs" />
     <Compile Include="Patterns\Boxing\StringFormatBoxing.cs" />
     <Compile Include="Patterns\Call\Call.cs" />
