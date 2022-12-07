@@ -9,9 +9,9 @@ namespace ILReader.Tests {
 
     [TestFixture]
     public class ILReader_Tests {
-        IILReaderConfiguration cfg = StandardConfiguration.Default;
+        readonly IILReaderConfiguration cfg = StandardConfiguration.Default;
         #region Test Classes
-        Action<Foo, Action> subscribe = (foo, execute) => foo.Click += (s, e) => execute();
+        readonly Action<Foo, Action> subscribe = (foo, execute) => foo.Click += (s, e) => execute();
         class Foo {
             public event EventHandler Click {
                 add { }
@@ -19,9 +19,13 @@ namespace ILReader.Tests {
             }
         }
         class FooBar {
-            int val = 42;
+            readonly int val = 42;
             public int Sum(int a, int b, int c, int d, int e) {
                 return val + a + b + c + d + e;
+            }
+            public int Divide(int a, int b) {
+                try { return a / b; }
+                catch(DivideByZeroException) { return 0; }
             }
         }
         #endregion Test Classes
@@ -45,6 +49,22 @@ namespace ILReader.Tests {
             var locals = reader.Metadata.ElementAt(3);
             Assert.IsTrue(locals.HasChildren);
             Assert.AreEqual(1, locals.Children.Count());
+        }
+        [Test]
+        public void Test_ReadExceptionBlocks() {
+            var reader = cfg.GetReader(typeof(FooBar).GetMethod("Divide"));
+            Assert.AreEqual(14, reader.Count());
+            var args = reader.Metadata.First();
+            Assert.IsTrue(args.HasChildren);
+            Assert.AreEqual(2, args.Children.Count());
+            var codeSize = reader.Metadata.ElementAt(1);
+            Assert.AreEqual(16, codeSize.Value);
+            var maxStackSize = reader.Metadata.ElementAt(2);
+            Assert.AreEqual(2, maxStackSize.Value);
+            Assert.AreEqual(1, reader.ExceptionHandlers.Length);
+            var ex = reader.ExceptionHandlers[0];
+            Assert.AreEqual(ExceptionHandlerType.Catch, ex.HandlerType);
+            Assert.AreEqual(typeof(DivideByZeroException), ex.CatchType);
         }
         [Test]
         public void Test_ReadInstructions_Stress() {

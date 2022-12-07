@@ -6,8 +6,8 @@
         void CopyTo(IInstruction[] array, int index);
         IInstruction this[int index] { get; }
         int Count { get; }
-        //
         string Name { get; }
+        ExceptionHandler[] ExceptionHandlers { get; }
         IEnumerable<IMetadataItem> Metadata { get; }
     }
     //
@@ -17,7 +17,7 @@
         string Text { get; }
         OpCode OpCode { get; }
         object Operand { get; }
-        //
+        int Depth { get; }
         byte[] Bytes { get; }
     }
     //

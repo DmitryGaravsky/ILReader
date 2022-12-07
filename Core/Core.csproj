@@ -55,6 +55,7 @@
     <Compile Include="Dump\ILReaderDump.cs" />
     <Compile Include="Dump\ISupportDump.cs" />
     <Compile Include="Dump\InstructionReaderDump.cs" />
+    <Compile Include="ExceptionHandlerReader\ExceptionHandler.cs" />
     <Compile Include="ILReader\IILReader.cs" />
     <Compile Include="ILReader\IILReaderFactory.cs" />
     <Compile Include="ILReader\ILReaderFactory.cs" />

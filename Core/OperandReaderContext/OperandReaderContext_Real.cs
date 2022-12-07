@@ -71,15 +71,15 @@ namespace ILReader.Context {
         }
         // Dump
         public void Dump(System.IO.Stream stream) {
-            ILReader.Dump.DumpHelper.Write((@this ?? String.Empty).ToString(), stream);
-            ILReader.Dump.DumpHelper.Write(arguments, stream, ArgumentToString);
-            ILReader.Dump.DumpHelper.Write(variables, stream, VariableToString);
-            ILReader.Dump.DumpHelper.Write(methodTokens, stream, MethodToString);
-            ILReader.Dump.DumpHelper.Write(fieldTokens, stream, FieldToString);
-            ILReader.Dump.DumpHelper.Write(typeTokens, stream, TypeToString);
-            ILReader.Dump.DumpHelper.Write(memberTokens, stream, MemberToString);
-            ILReader.Dump.DumpHelper.Write(stringTokens, stream);
-            ILReader.Dump.DumpHelper.Write(signatureTokens, stream);
+            DumpHelper.Write((@this ?? String.Empty).ToString(), stream);
+            DumpHelper.Write(arguments, stream, ArgumentToString);
+            DumpHelper.Write(variables, stream, VariableToString);
+            DumpHelper.Write(methodTokens, stream, MethodToString);
+            DumpHelper.Write(fieldTokens, stream, FieldToString);
+            DumpHelper.Write(typeTokens, stream, TypeToString);
+            DumpHelper.Write(memberTokens, stream, MemberToString);
+            DumpHelper.Write(stringTokens, stream);
+            DumpHelper.Write(signatureTokens, stream);
         }
         protected virtual string ArgumentToString(object argument) {
             var parameterInfo = (ParameterInfo)argument;
@@ -88,7 +88,7 @@ namespace ILReader.Context {
         protected virtual string VariableToString(object variable) {
             return variable.ToString();
         }
-        static Dictionary<Type, string> typeAliases = new Dictionary<Type, string> { 
+        readonly static Dictionary<Type, string> typeAliases = new Dictionary<Type, string> {
             { typeof(void), "void" },
             { typeof(object), "object" },
             { typeof(string), "string" },
@@ -103,8 +103,10 @@ namespace ILReader.Context {
         };
         protected static string TypeToString(Type type) {
             string alias;
-            return typeAliases.TryGetValue(type, out alias) ? alias :
-                (type.Namespace == "System" || type.Namespace == "System.Reflection" ? type.Name : type.ToString());
+            return typeAliases.TryGetValue(type, out alias) ? alias : TypeToStringCore(type);
+        }
+        static string TypeToStringCore(Type type) {
+            return type.Namespace == "System" || type.Namespace == "System.Reflection" ? type.Name : type.ToString();
         }
         static string MethodToString(MethodBase method) {
             string returnType, declaringType = null;

@@ -1,15 +1,15 @@
-﻿using System.Linq;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using ILReader.Readers;
-using System;
 
 namespace ILReader.Visualizer.UI {
     public partial class CodeBox : UserControl {
         const int DefaultFontIndex = 1;
         float currentFontSize;
-        readonly static float[] fontSizes = new float[] { 
+        readonly static float[] fontSizes = new float[] {
             6, 8.25f, 10, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40, 48, 56, 72
         };
         readonly static Font[] fonts = new Font[fontSizes.Length];
@@ -42,27 +42,69 @@ namespace ILReader.Visualizer.UI {
             var ILReader = instructions as Readers.IILReader;
             if(ILReader != null && ILReader.Metadata.Any()) {
                 AppendLines(ILReader.Metadata);
-                rtbCode.AppendText(System.Environment.NewLine);
+                rtbCode.AppendText(Environment.NewLine);
             }
-            int bytesLength = instructions.Any() ? instructions.Max(i => i.Bytes.Length) : 0;
+            int bytesLength = instructions.Any() && showBytes ? instructions.Max(i => i.Bytes.Length) : 0;
+            Dictionary<int, string> exceptionBlocks = new Dictionary<int, string>();
+            if(ILReader != null) {
+                for(int i = 0; i < ILReader.ExceptionHandlers.Length; i++) {
+                    var eh = ILReader.ExceptionHandlers[i];
+                    PrepareExceptionBlockLine(exceptionBlocks, eh.TryStart.Index, ".try {", i, bytesLength);
+                    PrepareExceptionBlockLine(exceptionBlocks, eh.TryEnd.Index, "}  // end .try", i, bytesLength);
+                    if(eh.IsFinally)
+                        PrepareExceptionBlockLine(exceptionBlocks, eh.HandlerStart.Index, "finally {", i, bytesLength);
+                    if(eh.IsFault)
+                        PrepareExceptionBlockLine(exceptionBlocks, eh.HandlerStart.Index, "fault {", i, bytesLength);
+                    if(eh.IsCatch)
+                        PrepareExceptionBlockLine(exceptionBlocks, eh.HandlerStart.Index, "catch " + eh.CatchType + " {", i, bytesLength);
+                    if(eh.IsFilter)
+                        PrepareExceptionBlockLine(exceptionBlocks, eh.FilterStart.Index, "filter {", i, bytesLength);
+                    PrepareExceptionBlockLine(exceptionBlocks, eh.HandlerEnd.Index, "} // end handler", i, bytesLength);
+                }
+            }
             foreach(var instruction in instructions) {
                 rtbCode.SelectionFont = GetFont(CodeSize, currentFontSize);
+                string ebLines;
+                if(exceptionBlocks.TryGetValue(instruction.Index, out ebLines))
+                    AppendExceptionBlockLines(ebLines, instruction.Depth - 1);
                 if(instruction.OpCode == System.Reflection.Emit.OpCodes.Ldstr)
-                    AppendLdSrtLine(rtbCode, instruction.Text, instruction.Bytes, bytesLength, (string)instruction.Operand, showOffset, showBytes);
+                    AppendLdSrtLine(rtbCode, instruction, bytesLength, showOffset, showBytes);
                 else
-                    AppendLine(rtbCode, instruction.Text, instruction.Bytes, bytesLength, instruction.OpCode.ToString(), showOffset, showBytes);
+                    AppendLine(rtbCode, instruction, bytesLength, showOffset, showBytes);
             }
             rtbCode.EndUpdate();
             if(codeSize.HasValue) {
                 SetFont(rtbCode, codeSize.Value);
                 codeSize = null;
             }
+            rtbCode.Select(0, 0);
+            rtbCode.ScrollToCaret();
         }
-        void AppendLines(IEnumerable<Readers.IMetadataItem> metadata, int offset = 0) {
+        void AppendExceptionBlockLines(string exceptionBlock, int depth) {
+            var lines = exceptionBlock.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            for(int i = 0; i < lines.Length; i++) {
+                SetColor(rtbCode, Color.DeepSkyBlue);
+                rtbCode.AppendText(lines[i].Substring(0, 6));
+                if(depth > 0)
+                    rtbCode.AppendText(new string(' ', depth * 2));
+                SetColor(rtbCode, Color.DarkGreen);
+                rtbCode.AppendText(lines[i].Substring(6));
+                rtbCode.AppendText(Environment.NewLine);
+            }
+        }
+        static void PrepareExceptionBlockLine(Dictionary<int, string> exceptionBlocks, int index, string text, int i, int bytesLength) {
+            var blockLine = ("@" + i.ToString("X2")).PadRight(bytesLength * 2 + (bytesLength > 0 ? 1 : 0) + 8) + text + Environment.NewLine;
+            string line;
+            if(!exceptionBlocks.TryGetValue(index, out line))
+                exceptionBlocks.Add(index, blockLine);
+            else
+                exceptionBlocks[index] = line + blockLine;
+        }
+        void AppendLines(IEnumerable<IMetadataItem> metadata, int offset = 0) {
             foreach(var meta in metadata) {
                 rtbCode.SelectionFont = GetFont(CodeSize, currentFontSize);
                 if(meta.HasChildren) {
-                    AppendLine(rtbCode, meta.Name, "(" + System.Environment.NewLine, offset, false);
+                    AppendLine(rtbCode, meta.Name, "(" + Environment.NewLine, offset, false);
                     AppendLines(meta.Children, offset + 4);
                     rtbCode.SelectionFont = GetFont(CodeSize, currentFontSize);
                     AppendLine(rtbCode, null, ")", offset);
@@ -79,68 +121,71 @@ namespace ILReader.Visualizer.UI {
                 var metaValue = (meta != null) ? (" " + value.ToString()) : value.ToString();
                 AppendHighlight(rtb, metaValue, Color.Blue, Color.DarkBlue);
             }
-            if(newLine) rtb.AppendText(System.Environment.NewLine);
+            if(newLine) rtb.AppendText(Environment.NewLine);
         }
-        static void AppendLdSrtLine(RichTextBox rtb, string line, byte[] bytes, int bytesLength, string value, bool showOffset, bool showBytes) {
+        static void AppendLdSrtLine(RichTextBox rtb, IInstruction instruction, int bytesLength, bool showOffset, bool showBytes) {
             if(showOffset) {
+                string line = instruction.Text;
                 SetColor(rtb, Color.Gray);
                 rtb.AppendText(line.Substring(0, line.IndexOf(':') + 2));
             }
             if(showBytes) {
                 SetColor(rtb, Color.DarkGreen);
-                string strBytes = GetStrBytes(bytes);
+                string strBytes = GetStrBytes(instruction.Bytes);
                 rtb.AppendText(strBytes.PadRight(bytesLength * 2 + 1));
             }
+            if(instruction.Depth > 0)
+                rtb.AppendText(new string(' ', instruction.Depth * 2));
             SetColor(rtb, Color.Blue);
             rtb.AppendText(System.Reflection.Emit.OpCodes.Ldstr.ToString());
-            SetColor(rtb, Color.DarkCyan);
+            SetColor(rtb, Color.DarkRed);
+            string value = (string)instruction.Operand;
             rtb.AppendText(" \"" + value + "\"");
-            rtb.AppendText(System.Environment.NewLine);
+            rtb.AppendText(Environment.NewLine);
         }
-        static void AppendLine(RichTextBox rtb, string line, byte[] bytes, int bytesLength, string keyword, bool showOffset, bool showBytes) {
+        static void AppendLine(RichTextBox rtb, IInstruction instruction, int bytesLength, bool showOffset, bool showBytes) {
+            string line = instruction.Text;
             if(showOffset) {
                 SetColor(rtb, Color.Gray);
                 rtb.AppendText(line.Substring(0, line.IndexOf(':') + 2));
             }
             if(showBytes) {
                 SetColor(rtb, Color.DarkGreen);
-                string strBytes = GetStrBytes(bytes);
+                string strBytes = GetStrBytes(instruction.Bytes);
                 rtb.AppendText(strBytes.PadRight(bytesLength * 2 + 1));
             }
+            if(instruction.Depth > 0)
+                rtb.AppendText(new string(' ', instruction.Depth * 2));
             SetColor(rtb, Color.Blue);
+            string keyword = instruction.OpCode.ToString();
             rtb.AppendText(keyword);
             SetColor(rtb, rtb.ForeColor);
             var value = line.Substring(line.IndexOf(keyword) + keyword.Length);
             AppendHighlight(rtb, value, Color.DarkBlue, rtb.ForeColor, Color.Gray);
-            rtb.AppendText(System.Environment.NewLine);
+            rtb.AppendText(Environment.NewLine);
         }
         static void AppendHighlight(RichTextBox rtb, string codeLine, Color keywordColor, Color textColor) {
             codeLine.Highlight(
-                keyword =>
-                {
+                keyword => {
                     SetColor(rtb, keywordColor);
                     rtb.AppendText(keyword);
                 },
-                text =>
-                {
+                text => {
                     SetColor(rtb, textColor);
                     rtb.AppendText(text);
                 });
         }
         static void AppendHighlight(RichTextBox rtb, string codeLine, Color keywordColor, Color textColor, Color specialColor) {
             codeLine.Highlight(
-                keyword =>
-                {
+                keyword => {
                     SetColor(rtb, keywordColor);
                     rtb.AppendText(keyword);
                 },
-                text =>
-                {
+                text => {
                     SetColor(rtb, textColor);
                     rtb.AppendText(text);
                 },
-                special =>
-                {
+                special => {
                     SetColor(rtb, specialColor);
                     rtb.AppendText(special);
                 });
@@ -165,7 +210,7 @@ namespace ILReader.Visualizer.UI {
         }
         static Font GetFont(int index, float size) {
             if(fonts[index] == null)
-                fonts[index] = new System.Drawing.Font(fonts[DefaultFontIndex].FontFamily, size, FontStyle.Regular, GraphicsUnit.Point, 0);
+                fonts[index] = new Font(fonts[DefaultFontIndex].FontFamily, size, FontStyle.Regular, GraphicsUnit.Point, 0);
             return fonts[index];
         }
         static string GetStrBytes(byte[] bytes) {
@@ -204,10 +249,10 @@ namespace ILReader.Visualizer.UI {
             SetFont(rtbCode, DefaultFontIndex);
         }
         void ZoomIn() {
-            SetFont(rtbCode, System.Array.FindIndex(fontSizes, fs => fs > currentFontSize));
+            SetFont(rtbCode, Array.FindIndex(fontSizes, fs => fs > currentFontSize));
         }
         void ZoomOut() {
-            SetFont(rtbCode, System.Array.FindLastIndex(fontSizes, fs => fs < currentFontSize));
+            SetFont(rtbCode, Array.FindLastIndex(fontSizes, fs => fs < currentFontSize));
         }
     }
     //
@@ -224,19 +269,17 @@ namespace ILReader.Visualizer.UI {
         static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
     }
     static class HightlightCodeExtension {
-        static readonly string[] DefaultKeywords = new string[] { 
+        static readonly string[] DefaultKeywords = new string[] {
             "void", "instance", "static", "noinlining", "il", "dynamic", ".ctor",
-            "object", "byte", "bool", "char", "int", "long", "decimal", "float", "double", "string", 
+            "object", "byte", "bool", "char", "int", "long", "decimal", "float", "double", "string",
         };
-
+        static readonly char[] splitChars = new char[] { ' ' };
         static internal void Highlight(this string codeLine, Action<string> appendKeyword, Action<string> append, Action<string> appendSpecial = null) {
-            var words = codeLine.ToLowerInvariant().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            var keywords = Array.FindAll(words,
-                w => (Array.IndexOf(DefaultKeywords, w.ToLowerInvariant()) != -1 ||
-                    w.ToLowerInvariant().Contains("@this") ||
-                    w.ToLowerInvariant().Contains("@arg.") ||
-                    w.ToLowerInvariant().Contains("@loc."))
-                );
+            var words = codeLine.ToLowerInvariant().Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
+            var keywords = Array.FindAll(words, w => {
+                var wl = w.ToLowerInvariant();
+                return Array.IndexOf(DefaultKeywords, wl) != -1 || wl.Contains("@this") || wl.Contains("@arg.") || wl.Contains("@loc.");
+            });
             int startIndex = 0; int endIndex = 0;
             if(keywords.Length > 0) {
                 var line = codeLine.ToLowerInvariant();

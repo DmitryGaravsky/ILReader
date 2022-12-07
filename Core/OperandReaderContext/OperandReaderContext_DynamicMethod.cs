@@ -3,6 +3,7 @@ namespace ILReader.Context {
     using System.Reflection;
     using System.Reflection.Emit;
     using ILReader.Monads;
+    using ILReader.Readers;
 
     sealed class OperandReaderContext_DynamicMethod : OperandReaderContextReal, IOperandReaderContext {
         readonly object resolver;
@@ -71,6 +72,10 @@ namespace ILReader.Context {
         }
         public byte[] ResolveSignature(int signatureToken) {
             return GetOrCache(signatureTokens, signatureToken, t => resolveSignature(t, 0));
+        }
+        public bool ResolveExceptionHandler(Func<int, IInstruction> getInstruction, out Readers.ExceptionHandler handler) {
+            handler = null;
+            return false; // TODO
         }
         //
         Type ResolveTypeCore(int typeToken) {

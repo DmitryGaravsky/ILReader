@@ -26,7 +26,7 @@
             return (uint)(((int)current & -0xc1) << 24 | (int)ReadByte() << 16 | (int)ReadByte() << 8 | (int)ReadByte());
         }
     }
-    class LocalVarSig {
+    sealed class LocalVarSig {
         public readonly Type Type;
         readonly byte data;
         public LocalVarSig(Type type, bool typedByRef, bool pinned, bool byRef) {
@@ -42,7 +42,7 @@
             return Type.ToString();
         }
     }
-    class LocalSignatureReader : SignatureReader {
+    sealed class LocalSignatureReader : SignatureReader {
         LazyRef<LocalVarSig[]> locals;
         public LocalVarSig[] Locals {
             get { return locals.Value; }
@@ -153,7 +153,7 @@
         const byte ELEMENT_TYPE_U = 0x19;
         const byte ELEMENT_TYPE_OBJECT = 0x1c;
         //
-        System.Type ParseSimpleType() {
+        Type ParseSimpleType() {
             byte elem_type = ReadByte();
             switch(elem_type) {
                 case ELEMENT_TYPE_BOOLEAN:
@@ -181,9 +181,9 @@
                 case ELEMENT_TYPE_R8:
                     return typeof(double);
                 case ELEMENT_TYPE_I:
-                    return typeof(System.IntPtr);
+                    return typeof(IntPtr);
                 case ELEMENT_TYPE_U:
-                    return typeof(System.UIntPtr);
+                    return typeof(UIntPtr);
                 case ELEMENT_TYPE_STRING:
                     return typeof(string);
                 case ELEMENT_TYPE_OBJECT:

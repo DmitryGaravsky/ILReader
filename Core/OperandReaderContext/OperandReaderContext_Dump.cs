@@ -1,9 +1,14 @@
+using System;
 using System.Collections.Generic;
+using ILReader.Readers;
+
 namespace ILReader.Context {
     sealed class OperandReaderContextDump : IOperandReaderContext {
         readonly Dump.IILReaderDump dump;
+        IEnumerator<Tuple<ExceptionHandlerType, string, int[]>> exceptionHandlingClauses;
         public OperandReaderContextDump(Dump.IILReaderDump dump) {
             this.dump = dump;
+            this.exceptionHandlingClauses = dump.ExceptionHandlers.GetEnumerator();
         }
         public OperandReaderContextType Type {
             get { return dump.Type; }
@@ -12,7 +17,7 @@ namespace ILReader.Context {
         public string Name {
             get { return dump.Name; }
         }
-        public IEnumerable<Readers.IMetadataItem> GetMetadata() {
+        public IEnumerable<IMetadataItem> GetMetadata() {
             return dump.Metadata;
         }
         // Body
@@ -47,8 +52,21 @@ namespace ILReader.Context {
         public byte[] ResolveSignature(int signatureToken) {
             return dump.Signatures[signatureToken];
         }
+        public bool ResolveExceptionHandler(Func<int, IInstruction> getInstruction, out ExceptionHandler handler) {
+            handler = null;
+            if(exceptionHandlingClauses != null) {
+                if(exceptionHandlingClauses.MoveNext()) {
+                    var t = exceptionHandlingClauses.Current;
+                    handler = new ExceptionHandler(getInstruction, t.Item1, t.Item2, t.Item3);
+                    return true;
+                }
+                exceptionHandlingClauses.Dispose();
+                exceptionHandlingClauses = null;
+            }
+            return false;
+        }
         // Dump
-        public void Dump(System.IO.Stream stream) { 
+        public void Dump(System.IO.Stream stream) {
             /* do nothing */
         }
     }

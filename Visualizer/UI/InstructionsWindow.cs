@@ -9,10 +9,10 @@
         public InstructionsWindow() {
             InitializeComponent();
         }
-        Readers.IILReader ILReader;
+        IILReader ILReader;
         public InstructionsWindow(IEnumerable<IInstruction> reader)
             : this() {
-            ILReader = reader as Readers.IILReader;
+            ILReader = reader as IILReader;
             if(ILReader == null)
                 LoadSettingsAndUpdate(reader);
         }
@@ -43,7 +43,7 @@
         }
         void LoadSettingsAndUpdate(IEnumerable<IInstruction> instructions) {
             LoadSettings();
-            LoadImage(instructions as Readers.IILReader);
+            LoadImage(instructions as IILReader);
             UpdateCodeBox(instructions, cbShowOffset.Checked, cbShowBytes.Checked);
             detailBox.DataSource = instructions;
         }
@@ -79,7 +79,7 @@
             detailBox.BytesVisible = cbShowBytes.Checked = settings.ShowBytes;
             detailBox.OffsetVisible = cbShowOffset.Checked = settings.ShowOffset;
             codeBox.CodeSize = settings.CodeSize;
-            Bounds = new System.Drawing.Rectangle(settings.Left, settings.Top, settings.Width, settings.Height);
+            Bounds = new Rectangle(settings.Left, settings.Top, settings.Width, settings.Height);
             WindowState = (FormWindowState)settings.WindowState;
         }
         void SaveSettings() {

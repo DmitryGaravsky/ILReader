@@ -5,16 +5,19 @@
     using System.IO;
     using System.Linq;
     using System.Reflection.Emit;
+    using ILReader.Context;
 
     class InstructionReader : IILReader, Dump.ISupportDump {
         readonly LazyRef<string> name;
         readonly LazyRef<IEnumerable<IMetadataItem>> metadata;
         readonly LazyRef<IInstruction[]> instructions;
+        readonly LazyRef<ExceptionHandler[]> exceptionHandlers;
         readonly LazyRef<Action<Stream>> writeDump;
-        public InstructionReader(IBinaryReader binaryReader, Context.IOperandReaderContext context) {
+        public InstructionReader(IBinaryReader binaryReader, IOperandReaderContext context) {
             name = new LazyRef<string>(() => GetName(context));
             metadata = new LazyRef<IEnumerable<IMetadataItem>>(() => GetMetadata(context));
             instructions = new LazyRef<IInstruction[]>(() => GetInstructions(binaryReader, context).ToArray());
+            exceptionHandlers = new LazyRef<ExceptionHandler[]>(() => GetExceptionHandlers(context).ToArray());
             writeDump = new LazyRef<Action<Stream>>(() => (stream) => WriteDump(context, stream));
         }
         string IILReader.Name {
@@ -23,11 +26,11 @@
         IEnumerable<IMetadataItem> IILReader.Metadata {
             get { return metadata.Value; }
         }
-        protected virtual string GetName(Context.IOperandReaderContext context) {
-            return (context.Type == Context.OperandReaderContextType.Method) ? context.Name :
+        protected virtual string GetName(IOperandReaderContext context) {
+            return (context.Type == OperandReaderContextType.Method) ? context.Name :
                 context.Name + "(" + context.Type.ToString() + ")";
         }
-        protected virtual IEnumerable<IMetadataItem> GetMetadata(Context.IOperandReaderContext context) {
+        protected virtual IEnumerable<IMetadataItem> GetMetadata(IOperandReaderContext context) {
             return context.GetMetadata();
         }
         void IILReader.CopyTo(IInstruction[] array, int index) {
@@ -39,6 +42,9 @@
         int IILReader.Count {
             get { return instructions.Value.Length; }
         }
+        ExceptionHandler[] IILReader.ExceptionHandlers {
+            get { return exceptionHandlers.Value; }
+        }
         IInstruction GetInstruction(IInstruction[] array, int index) {
             return (index >= 0 && index < array.Length) ? array[index] : null;
         }
@@ -48,20 +54,35 @@
         IEnumerator IEnumerable.GetEnumerator() {
             return instructions.Value.GetEnumerator();
         }
-        protected virtual IEnumerable<IInstruction> GetInstructions(IBinaryReader binaryReader, Context.IOperandReaderContext context) {
+        protected virtual IEnumerable<IInstruction> GetInstructions(IBinaryReader binaryReader, IOperandReaderContext context) {
             int index = 0;
             while(binaryReader.CanRead())
                 yield return new Instruction(index++, binaryReader, context);
         }
-        protected virtual void WriteDump(Context.IOperandReaderContext context, Stream stream) {
-            Dump.InstructionReaderDump.Write(stream, context);
+        protected virtual IEnumerable<ExceptionHandler> GetExceptionHandlers(IOperandReaderContext context) {
+            ExceptionHandler current;
+            var getInstruction = GetGetInstruction(instructions.Value);
+            while(context.ResolveExceptionHandler(getInstruction, out current)) 
+                yield return current.Advance(instructions.Value, x => ((Instruction)x).IncreaseDepth());
         }
-        //
+        static Func<int, IInstruction> GetGetInstruction(IInstruction[] instructionsArray) {
+            int index = 0;
+            return offset => {
+                for(; index < instructionsArray.Length; index++) {
+                    if(instructionsArray[index].Offset == offset)
+                        return instructionsArray[index];
+                }
+                return null;
+            };
+        }
+        protected virtual void WriteDump(IOperandReaderContext context, Stream stream) {
+            Dump.InstructionReaderDump.Write(stream, context, exceptionHandlers.Value);
+        }
         sealed class Instruction : IInstruction {
             readonly LazyRef<byte[]> bytes;
             readonly object rawOperand;
             readonly short? argIndex, locIndex;
-            internal Instruction(int index, IBinaryReader binaryReader, Context.IOperandReaderContext context) {
+            internal Instruction(int index, IBinaryReader binaryReader, IOperandReaderContext context) {
                 this.Index = index;
                 this.Offset = binaryReader.Offset;
                 this.OpCode = OpCodeReader.ReadOpCode(binaryReader);
@@ -75,6 +96,7 @@
                     else
                         this.rawOperand = context.This;
                 }
+                // Local
                 bool localAware = OperandReader.IsLocalAware(OpCode);
                 if(localAware) {
                     this.Operand = OperandReader.Read(binaryReader, context, OpCode.OperandType);
@@ -84,7 +106,7 @@
                 }
                 if(!localAware && !argumentAware)
                     this.Operand = OperandReader.Read(binaryReader, context, OpCode.OperandType);
-                //
+                // bytes
                 int size = binaryReader.Offset - Offset;
                 this.bytes = new LazyRef<byte[]>(() => binaryReader.Read(Offset, size));
             }
@@ -95,6 +117,13 @@
             public int Offset {
                 get;
                 private set;
+            }
+            public int Depth {
+                get;
+                private set;
+            }
+            internal void IncreaseDepth() {
+                Depth++;
             }
             public OpCode OpCode {
                 get;
@@ -116,12 +145,11 @@
                         if(argIndex.HasValue) {
                             if(argIndex.Value > 0)
                                 return string.Format("IL_{0}: {1}   (@arg.{2} {3})", Offset.ToString("X4"), OpCode.ToString(), argIndex.Value.ToString(), rawOperand.ToString().TrimEnd());
-                            else
-                                return string.Format("IL_{0}: {1}   (@this {2})", Offset.ToString("X4"), OpCode.ToString(), rawOperand.ToString().TrimEnd());
+                            return string.Format("IL_{0}: {1}   (@this {2})", Offset.ToString("X4"), OpCode.ToString(), rawOperand.ToString().TrimEnd());
                         }
                         return string.Format("IL_{0}: {1} ({2})", Offset.ToString("X4"), OpCode.ToString(), rawOperand.ToString().TrimEnd());
                     }
-                    else return string.Format("IL_{0}: {1}", Offset.ToString("X4"), OpCode.ToString());
+                    return string.Format("IL_{0}: {1}", Offset.ToString("X4"), OpCode.ToString());
                 }
                 else {
                     string suffix = string.Empty;
@@ -129,7 +157,6 @@
                         suffix = string.Format(" (@arg.{0} {1})", argIndex.Value.ToString(), (rawOperand ?? Operand).ToString().TrimEnd());
                     if(locIndex.HasValue)
                         suffix = string.Format(" (@loc.{0} {1})", locIndex.Value.ToString(), (rawOperand ?? Operand).ToString().TrimEnd());
-                    //
                     return string.Format("IL_{0}: {1} {2}", Offset.ToString("X4"), OpCode.ToString(), Operand.ToString()) + suffix;
                 }
             }
@@ -140,16 +167,19 @@
             internal InstructionReaderEmpty()
                 : base(null, null) {
             }
-            protected override string GetName(Context.IOperandReaderContext context) {
+            protected override string GetName(IOperandReaderContext context) {
                 return string.Empty;
             }
-            protected override IEnumerable<IMetadataItem> GetMetadata(Context.IOperandReaderContext context) {
+            protected override IEnumerable<IMetadataItem> GetMetadata(IOperandReaderContext context) {
                 yield break;
             }
-            protected override IEnumerable<IInstruction> GetInstructions(IBinaryReader binaryReader, Context.IOperandReaderContext context) {
+            protected override IEnumerable<IInstruction> GetInstructions(IBinaryReader binaryReader, IOperandReaderContext context) {
                 yield break;
             }
-            protected override void WriteDump(Context.IOperandReaderContext context, Stream stream) {
+            protected override IEnumerable<ExceptionHandler> GetExceptionHandlers(IOperandReaderContext context) {
+                yield break;
+            }
+            protected override void WriteDump(IOperandReaderContext context, Stream stream) {
                 /* do nothing */
             }
         }
