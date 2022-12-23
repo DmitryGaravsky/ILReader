@@ -6,8 +6,9 @@
     using System.Linq;
     using System.Reflection.Emit;
     using ILReader.Context;
+    using ILReader.Dump;
 
-    class InstructionReader : IILReader, Dump.ISupportDump {
+    class InstructionReader : IILReader, ISupportDump {
         readonly LazyRef<string> name;
         readonly LazyRef<IEnumerable<IMetadataItem>> metadata;
         readonly LazyRef<IInstruction[]> instructions;
@@ -61,8 +62,7 @@
         }
         protected virtual IEnumerable<ExceptionHandler> GetExceptionHandlers(IOperandReaderContext context) {
             ExceptionHandler current;
-            var getInstruction = GetGetInstruction(instructions.Value);
-            while(context.ResolveExceptionHandler(getInstruction, out current)) 
+            while(context.ResolveExceptionHandler(GetGetInstruction(instructions.Value), out current)) 
                 yield return current.Advance(instructions.Value, x => ((Instruction)x).IncreaseDepth());
         }
         static Func<int, IInstruction> GetGetInstruction(IInstruction[] instructionsArray) {

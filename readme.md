@@ -3,6 +3,8 @@
 `Common Intermediate Language` reader, analyzer and visualizer tool.  
 Allows you to access CIL-instructions of .Net method's bodies.
 
+<a href="https://www.nuget.org/packages/ILReader.Core/"><img alt="Nuget Version" src="https://img.shields.io/nuget/v/ILReader.Core.svg" data-canonical-src="https://img.shields.io/nuget/v/ILReader.Core.svg" style="max-width:100%;" /></a>
+
 ## Core Library (ILReader.Core)
 
 Provides a way to read and interprete CIL-bytes of methods and delegates bodies.
@@ -71,3 +73,15 @@ if (pattern.Match(reader)) {
 ## Real usage
 
 [MSIL-level boxing detector tool for .Net](https://github.com/DmitryGaravsky/MSIL-Boxing-Detector)
+
+
+### NuGet
+
+To install [ILReader.Core](https://www.nuget.org/packages/ILReader.Core), run the following command in the Package Manager Console:
+
+    Install-Package ILReader.Core
+
+
+### License
+
+The ILReader.Core library is licensed under the [MIT](https://github.com/DmitryGaravsky/ILReader.Core/blob/master/LICENSE.TXT) license.

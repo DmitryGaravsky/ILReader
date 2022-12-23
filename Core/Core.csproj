@@ -1,52 +1,40 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2FDE2DC0-F1DC-4090-84CD-58C0204CC63D}</ProjectGuid>
+    <EnableDefaultItems>False</EnableDefaultItems>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net472;net6.0</TargetFrameworks>
+
     <RootNamespace>ILReader</RootNamespace>
     <AssemblyName>ILReader.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ErrorReport>prompt</ErrorReport>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+    <EmbeddedResourceUseDependentUponConvention>False</EmbeddedResourceUseDependentUponConvention>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>CIL-Reader for Methods(e.g. dynamic) and Delegates</Title>
+    <Authors>Dmitry Garavsky</Authors>
+    <Description>
+      Common Intermediate Language reader, analyzer and visualizer tool.
+      Allows you to access CIL-instructions of .Net method's bodies
+    </Description>
+    <Copyright>Dmitry Garavsky, ©2022</Copyright>
+    <PackageProjectUrl>https://github.com/DmitryGaravsky/FastAccessors</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DmitryGaravsky/FastAccessors</RepositoryUrl>
+    <PackageTags>NET;MSIL;ILReader</PackageTags>
+    <PackageLicenseFile>LICENSE.TXT</PackageLicenseFile>
+    <PackageReadmeFile>README.MD</PackageReadmeFile>
+    <PackageOutputPath>..\bin</PackageOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <OutputPath>..\bin.NetFW\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+    <OutputPath>..\bin.NET\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>DEBUG;DEBUGTEST;TRACE</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>full</DebugType>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="FastAccessors">
-      <HintPath>..\Libs\FastAccessors.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
-    <Reference Include="nunit.framework" />
-  </ItemGroup>
+
   <ItemGroup>
     <Compile Include="BinaryReader\BinaryReader.cs" />
     <Compile Include="BinaryReader\IBinaryReader.cs" />
@@ -93,18 +81,19 @@
     <Compile Include="Utils\Monads\MayBe.cs" />
     <Compile Include="Utils\RuntimeTypes\RTTypes.cs" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugTest'">
-    <Compile Include="Tests\BinaryReader.cs" />
-    <Compile Include="Tests\ILReader.cs" />
-    <Compile Include="Tests\LocalSignatureReader.cs" />
-    <None Include="packages.config" />
+
+  <ItemGroup>
+    <None Include="..\LICENSE.TXT">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.MD">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <ItemGroup>
+    <PackageReference Include="FastAccessors" Version="1.0.*" />
+  </ItemGroup>
 </Project>

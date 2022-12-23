@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <ProjectGuid>{7EA5EBE7-7261-48F2-B63D-94765F7B59E6}</ProjectGuid>
+    <ProjectGuid>{6AC34B34-5D31-46BD-B354-6F176378E5AB}</ProjectGuid>
     <EnableDefaultItems>False</EnableDefaultItems>
     <OutputType>Library</OutputType>
     <TargetFramework>net472</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>ILReader.DebuggerVisualizer</RootNamespace>
-    <AssemblyName>ILReader.DebuggerVisualizer.16.0</AssemblyName>
+    <AssemblyName>ILReader.DebuggerVisualizer.17.0</AssemblyName>
     <OutputPath>..\bin\</OutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.DebuggerVisualizers" Version="16.0.*" />
+    <PackageReference Include="Microsoft.VisualStudio.DebuggerVisualizers" Version="17.0.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Analyzer\Analyzer.csproj" />
@@ -37,11 +37,10 @@
 
   <PropertyGroup>
     <PostBuildEvent>
-      xcopy "$(TargetDir)FastAccessors.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2019\Visualizers" /y
-      xcopy "$(TargetDir)ILReader.Core.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2019\Visualizers" /y
-      xcopy "$(TargetDir)ILReader.Visualizer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2019\Visualizers" /y
-      xcopy "$(TargetDir)ILReader.Analyzer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2019\Visualizers" /y
-      xcopy "$(TargetDir)ILReader.DebuggerVisualizer.16.0.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2019\Visualizers" /y
-    </PostBuildEvent>
+      xcopy "$(TargetDir)FastAccessors.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y
+      xcopy "$(TargetDir)ILReader.Core.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y
+      xcopy "$(TargetDir)ILReader.Visualizer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y
+      xcopy "$(TargetDir)ILReader.Analyzer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y
+      xcopy "$(TargetDir)ILReader.DebuggerVisualizer.17.0.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y</PostBuildEvent>
   </PropertyGroup>
 </Project>
