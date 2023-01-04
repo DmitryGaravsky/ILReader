@@ -26,6 +26,11 @@
     <PackageLicenseFile>LICENSE.TXT</PackageLicenseFile>
     <PackageReadmeFile>README.MD</PackageReadmeFile>
     <PackageOutputPath>..\bin</PackageOutputPath>
+    <FileVersion>1.0.0.1</FileVersion>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <PackageReleaseNotes>v1.0.0.1
+ - Perfornamce optimization + concurrency support</PackageReleaseNotes>
+    <Version>1.0.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net472' ">
