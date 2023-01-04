@@ -1,5 +1,5 @@
 ﻿namespace ILReader {
-    using System.Collections.Generic;
+    using System.Collections.Concurrent;
     using System.Reflection;
     using System.Reflection.Emit;
     using ILReader.Monads;
@@ -9,7 +9,6 @@
         public static IILReaderConfiguration Standard {
             get { return StandardConfiguration.Default; }
         }
-        //
         public static IILReaderConfiguration Resolve(System.IO.Stream dump) {
             return DumpConfiguration.Default;
         }
@@ -23,21 +22,19 @@
     }
     //
     abstract class ConfigurationBase : IILReaderConfiguration {
-        static Dictionary<MethodBase, IILReader> readers = new Dictionary<MethodBase, IILReader>();
-        protected virtual void ResetReader(MethodBase methodBase) {
-            readers.Remove(methodBase);
+        readonly static ConcurrentDictionary<MethodBase, IILReader> readers = new ConcurrentDictionary<MethodBase, IILReader>();
+        protected virtual IILReader ResetReader(MethodBase methodBase) {
+            IILReader reader;
+            return readers.TryRemove(methodBase, out reader) ? reader : null;
         }
         protected virtual void ResetReaders() {
             readers.Clear();
         }
         protected virtual IILReader GetOrCreateReader(MethodBase methodBase) {
-            IILReader reader;
-            if(!readers.TryGetValue(methodBase, out reader)) {
+            return readers.GetOrAdd(methodBase, m => {
                 var factory = CreateILReaderFactory(methodBase);
-                reader = factory.CreateReader();
-                readers.Add(methodBase, reader);
-            }
-            return reader;
+                return factory.CreateReader();
+            });
         }
         protected virtual IILReader CreateReader(System.IO.Stream dump) {
             var factory = CreateILReaderFactory(dump);
@@ -56,18 +53,17 @@
         protected abstract Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase);
         protected abstract Context.IOperandReaderContext CreateOperandReaderContext(System.IO.Stream dump);
         #region IILReaderConfiguration
-        readonly static object syncObj = new object();
         IILReader IILReaderConfiguration.GetReader(System.IO.Stream dump) {
-            lock(syncObj) return CreateReader(dump);
+            return CreateReader(dump);
         }
         IILReader IILReaderConfiguration.GetReader(MethodBase methodBase) {
-            lock(syncObj) return GetOrCreateReader(methodBase);
+            return GetOrCreateReader(methodBase);
         }
         void IILReaderConfiguration.Reset(MethodBase methodBase) {
-            lock(syncObj) ResetReader(methodBase);
+            ResetReader(methodBase);
         }
         void IILReaderConfiguration.Reset() {
-            lock(syncObj) ResetReaders();
+            ResetReaders();
         }
         IBinaryReader IILReaderConfiguration.CreateBinaryReader(byte[] bytes) {
             return CreateBinaryReader(bytes);

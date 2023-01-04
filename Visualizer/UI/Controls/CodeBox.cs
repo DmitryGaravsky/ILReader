@@ -268,7 +268,7 @@ namespace ILReader.Visualizer.UI {
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
     }
-    static class HightlightCodeExtension {
+    static class HighlightCodeExtension {
         static readonly string[] DefaultKeywords = new string[] {
             "void", "instance", "static", "noinlining", "il", "dynamic", ".ctor",
             "object", "byte", "bool", "char", "int", "long", "decimal", "float", "double", "string",

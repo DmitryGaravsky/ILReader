@@ -28,8 +28,7 @@
             // 64bit
             operandReadersCache.Add(OperandType.InlineI8, new InlineI8OperandReader());
             operandReadersCache.Add(OperandType.InlineR, new InlineROperandReader());
-
-
+            
             // Argument Readers
             argumentReadersCache.Add(OperandType.InlineNone, new InlineNoneOperandReader());
             // 8bit
@@ -49,47 +48,73 @@
                 return reader.Read(binaryReader, context);
             throw new System.NotSupportedException(operandType.ToString());
         }
-        //
-        readonly static OpCode[] argumentAwareOpcodes = new OpCode[] { 
-            OpCodes.Ldarg, OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3, OpCodes.Ldarg_S, OpCodes.Ldarga, OpCodes.Ldarga_S,
-            OpCodes.Starg, OpCodes.Starg_S, 
-        };
         public static bool IsArgumentAware(OpCode opCode) {
-            return System.Array.IndexOf(argumentAwareOpcodes, opCode) != -1;
+            return System.Array.IndexOf(argumentAwareOpcodeValues, opCode.Value) != -1;
         }
         public static short GetArgIndex(OpCode opCode, IBinaryReader binaryReader) {
-            if(opCode == OpCodes.Ldarg || opCode == OpCodes.Starg || opCode == OpCodes.Ldarga)
-                return System.BitConverter.ToInt16(binaryReader.Read(binaryReader.Offset - 2, 2), 0);
-            if(opCode == OpCodes.Ldarg_0)
+            short opcodeValue = opCode.Value;
+            if(opcodeValue == ldarg_0_value)
                 return 0; // this
-            if(opCode == OpCodes.Ldarg_1)
+            if(opcodeValue == ldarg_1_value)
                 return 1;
-            if(opCode == OpCodes.Ldarg_2)
+            if(opcodeValue == ldarg_2_value)
                 return 2;
-            if(opCode == OpCodes.Ldarg_3)
+            if(opcodeValue == ldarg_3_value)
                 return 3;
+            if(opcodeValue == ldarg_value || opcodeValue == starg_value || opcodeValue == ldarga_value)
+                return System.BitConverter.ToInt16(binaryReader.Read(binaryReader.Offset - 2, 2), 0);
             return binaryReader.Read(binaryReader.Offset - 1, 1)[0];
         }
-        //
-        readonly static OpCode[] localAwareOpcodes = new OpCode[] { 
-            OpCodes.Ldloc, OpCodes.Ldloc_0, OpCodes.Ldloc_1, OpCodes.Ldloc_2, OpCodes.Ldloc_3, OpCodes.Ldloc_S, OpCodes.Ldloca, OpCodes.Ldloca_S, 
-            OpCodes.Stloc, OpCodes.Stloc_0, OpCodes.Stloc_1, OpCodes.Stloc_2, OpCodes.Stloc_3, OpCodes.Stloc_S,
-        };
         public static bool IsLocalAware(OpCode opCode) {
-            return System.Array.IndexOf(localAwareOpcodes, opCode) != -1;
+            return System.Array.IndexOf(localAwareOpcodeValues, opCode.Value) != -1;
         }
         public static short GetLocalIndex(OpCode opCode, IBinaryReader binaryReader) {
-            if(opCode == OpCodes.Ldloc || opCode == OpCodes.Stloc || opCode == OpCodes.Ldloca)
-                return System.BitConverter.ToInt16(binaryReader.Read(binaryReader.Offset - 2, 2), 0);
-            if(opCode == OpCodes.Ldloc_0 || opCode == OpCodes.Stloc_0)
+            short opcodeValue = opCode.Value;
+            if(opcodeValue == ldloc_0_value || opcodeValue == stloc_0_value)
                 return 0;
-            if(opCode == OpCodes.Ldloc_1 || opCode == OpCodes.Stloc_1)
+            if(opcodeValue == ldloc_1_value || opcodeValue == stloc_1_value)
                 return 1;
-            if(opCode == OpCodes.Ldloc_2 || opCode == OpCodes.Stloc_2)
+            if(opcodeValue == ldloc_2_value || opcodeValue == stloc_2_value)
                 return 2;
-            if(opCode == OpCodes.Ldloc_3 || opCode == OpCodes.Stloc_3)
+            if(opcodeValue == ldloc_3_value || opcodeValue == stloc_3_value)
                 return 3;
+            if(opcodeValue == ldloc_value || opcodeValue == stloc_value || opcodeValue == ldloca_value)
+                return System.BitConverter.ToInt16(binaryReader.Read(binaryReader.Offset - 2, 2), 0);
             return binaryReader.Read(binaryReader.Offset - 1, 1)[0];
         }
+        #region OpCodes Data
+        // Argument aware
+        readonly static short[] argumentAwareOpcodeValues = new short[] {
+            OpCodes.Ldarg.Value, OpCodes.Ldarg_0.Value, OpCodes.Ldarg_1.Value, OpCodes.Ldarg_2.Value, OpCodes.Ldarg_3.Value,
+            OpCodes.Ldarg_S.Value, OpCodes.Ldarga.Value, OpCodes.Ldarga_S.Value,
+            OpCodes.Starg.Value, OpCodes.Starg_S.Value,
+        };
+        // Local aware
+        readonly static short[] localAwareOpcodeValues = new short[] {
+            OpCodes.Ldloc.Value, OpCodes.Ldloc_0.Value, OpCodes.Ldloc_1.Value, OpCodes.Ldloc_2.Value, OpCodes.Ldloc_3.Value,
+            OpCodes.Ldloc_S.Value, OpCodes.Ldloca.Value, OpCodes.Ldloca_S.Value,
+            OpCodes.Stloc.Value, OpCodes.Stloc_0.Value, OpCodes.Stloc_1.Value, OpCodes.Stloc_2.Value, OpCodes.Stloc_3.Value, OpCodes.Stloc_S.Value,
+        };
+        // Arg Indices
+        readonly static short ldarg_value = OpCodes.Ldarg.Value;
+        readonly static short starg_value = OpCodes.Starg.Value;
+        readonly static short ldarga_value = OpCodes.Ldarga.Value;
+        readonly static short ldarg_0_value = OpCodes.Ldarg_0.Value;
+        readonly static short ldarg_1_value = OpCodes.Ldarg_1.Value;
+        readonly static short ldarg_2_value = OpCodes.Ldarg_2.Value;
+        readonly static short ldarg_3_value = OpCodes.Ldarg_2.Value;
+        // Local Indices
+        readonly static short ldloc_value = OpCodes.Ldloc.Value;
+        readonly static short stloc_value = OpCodes.Stloc.Value;
+        readonly static short ldloca_value = OpCodes.Ldloca.Value;
+        readonly static short ldloc_0_value = OpCodes.Ldloc_0.Value;
+        readonly static short stloc_0_value = OpCodes.Stloc_0.Value;
+        readonly static short ldloc_1_value = OpCodes.Ldloc_1.Value;
+        readonly static short stloc_1_value = OpCodes.Stloc_1.Value;
+        readonly static short ldloc_2_value = OpCodes.Ldloc_2.Value;
+        readonly static short stloc_2_value = OpCodes.Stloc_2.Value;
+        readonly static short ldloc_3_value = OpCodes.Ldloc_3.Value;
+        readonly static short stloc_3_value = OpCodes.Stloc_3.Value;
+        #endregion
     }
 }

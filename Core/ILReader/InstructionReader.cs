@@ -62,7 +62,7 @@
         }
         protected virtual IEnumerable<ExceptionHandler> GetExceptionHandlers(IOperandReaderContext context) {
             ExceptionHandler current;
-            while(context.ResolveExceptionHandler(GetGetInstruction(instructions.Value), out current)) 
+            while(context.ResolveExceptionHandler(GetGetInstruction(instructions.Value), out current))
                 yield return current.Advance(instructions.Value, x => ((Instruction)x).IncreaseDepth());
         }
         static Func<int, IInstruction> GetGetInstruction(IInstruction[] instructionsArray) {
@@ -76,7 +76,7 @@
             };
         }
         protected virtual void WriteDump(IOperandReaderContext context, Stream stream) {
-            Dump.InstructionReaderDump.Write(stream, context, exceptionHandlers.Value);
+            InstructionReaderDump.Write(stream, context, exceptionHandlers.Value);
         }
         sealed class Instruction : IInstruction {
             readonly LazyRef<byte[]> bytes;
@@ -140,31 +140,41 @@
                 get { return ToString(); }
             }
             public sealed override string ToString() {
-                if(object.ReferenceEquals(Operand, null)) {
+                if(ReferenceEquals(Operand, null)) {
                     if(rawOperand != null) {
                         if(argIndex.HasValue) {
                             if(argIndex.Value > 0)
-                                return string.Format("IL_{0}: {1}   (@arg.{2} {3})", Offset.ToString("X4"), OpCode.ToString(), argIndex.Value.ToString(), rawOperand.ToString().TrimEnd());
-                            return string.Format("IL_{0}: {1}   (@this {2})", Offset.ToString("X4"), OpCode.ToString(), rawOperand.ToString().TrimEnd());
+                                return string.Format("IL_{0}: {1}   (@arg.{2} {3})", Offset.ToString("X4"), OpCode.Name, argIndex.Value.ToString(), GetRawOperandString(OpCode));
+                            return string.Format("IL_{0}: {1}   (@this {2})", Offset.ToString("X4"), OpCode.Name, GetRawOperandString(OpCode));
                         }
-                        return string.Format("IL_{0}: {1} ({2})", Offset.ToString("X4"), OpCode.ToString(), rawOperand.ToString().TrimEnd());
+                        return string.Format("IL_{0}: {1} ({2})", Offset.ToString("X4"), OpCode.Name, GetRawOperandString(OpCode));
                     }
-                    return string.Format("IL_{0}: {1}", Offset.ToString("X4"), OpCode.ToString());
+                    return string.Format("IL_{0}: {1}", Offset.ToString("X4"), OpCode.Name);
                 }
                 else {
                     string suffix = string.Empty;
                     if(argIndex.HasValue)
-                        suffix = string.Format(" (@arg.{0} {1})", argIndex.Value.ToString(), (rawOperand ?? Operand).ToString().TrimEnd());
+                        suffix = string.Format(" (@arg.{0} {1})", argIndex.Value.ToString(), GetOperandString(OpCode));
                     if(locIndex.HasValue)
-                        suffix = string.Format(" (@loc.{0} {1})", locIndex.Value.ToString(), (rawOperand ?? Operand).ToString().TrimEnd());
-                    return string.Format("IL_{0}: {1} {2}", Offset.ToString("X4"), OpCode.ToString(), Operand.ToString()) + suffix;
+                        suffix = string.Format(" (@loc.{0} {1})", locIndex.Value.ToString(), GetOperandString(OpCode));
+                    return string.Format("IL_{0}: {1} {2}", Offset.ToString("X4"), OpCode.Name, GetOperandString(OpCode)) + suffix;
                 }
+            }
+            string GetRawOperandString(OpCode opCode) {
+                return GetOperandString(opCode.Value, rawOperand);
+            }
+            string GetOperandString(OpCode opCode) {
+                return GetOperandString(opCode.Value, Operand ?? rawOperand);
+            }
+            readonly static short ldstr_value = OpCodes.Ldstr.Value;
+            static string GetOperandString(short opCodeValue, object value) {
+                return (opCodeValue == ldstr_value) ? "\"" + value.ToString() + "\"" : value.ToString().TrimEnd();
             }
         }
         #region Empty
         internal static readonly IILReader Empty = new InstructionReaderEmpty();
         sealed class InstructionReaderEmpty : InstructionReader {
-            internal InstructionReaderEmpty()
+            internal InstructionReaderEmpty() 
                 : base(null, null) {
             }
             protected override string GetName(IOperandReaderContext context) {
@@ -185,7 +195,7 @@
         }
         #endregion
         #region Dump
-        void Dump.ISupportDump.Dump(Stream stream) {
+        void ISupportDump.Dump(Stream stream) {
             IInstruction[] arr = instructions.Value;
             if(arr != null && arr.Length >= 0)
                 writeDump.Value(stream);
