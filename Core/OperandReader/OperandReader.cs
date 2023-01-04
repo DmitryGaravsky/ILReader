@@ -102,7 +102,7 @@
         readonly static short ldarg_0_value = OpCodes.Ldarg_0.Value;
         readonly static short ldarg_1_value = OpCodes.Ldarg_1.Value;
         readonly static short ldarg_2_value = OpCodes.Ldarg_2.Value;
-        readonly static short ldarg_3_value = OpCodes.Ldarg_2.Value;
+        readonly static short ldarg_3_value = OpCodes.Ldarg_3.Value;
         // Local Indices
         readonly static short ldloc_value = OpCodes.Ldloc.Value;
         readonly static short stloc_value = OpCodes.Stloc.Value;
