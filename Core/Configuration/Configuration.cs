@@ -1,5 +1,6 @@
 ﻿namespace ILReader {
     using System.Collections.Concurrent;
+    using System.ComponentModel;
     using System.Reflection;
     using System.Reflection.Emit;
     using ILReader.Monads;
@@ -18,6 +19,10 @@
             if(Equals(method.@Get(m => m.GetType()), RTTypes.RTDynamicMethodType))
                 return RTDynamicMethodConfiguration.Default;
             return StandardConfiguration.Default;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void DisableUsingRuntimeHelpersPrepareMethod() {
+            RTTypes.DisableUsingRuntimeHelpersPrepareMethod();
         }
     }
     //

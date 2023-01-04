@@ -56,8 +56,7 @@
                 var pResolver = Expression.Parameter(typeof(object), "resolver");
                 getTokenResolver = Expression.Lambda<Func<object, TokenResolver>>(
                     Expression.Convert(
-                        Expression.Call(
-                            mInfo_CreateDelegate,
+                        Expression.Call(mInfo_CreateDelegate,
                                 Expression.Constant(typeof(TokenResolver), typeof(Type)),
                                 Expression.Convert(pResolver, DynamicResolverType),
                                 Expression.Constant(mInfo_ResolveToken, typeof(MethodInfo))),
@@ -72,8 +71,7 @@
                 var pResolver = Expression.Parameter(typeof(object), "resolver");
                 getStringResolver = Expression.Lambda<Func<object, StringResolver>>(
                     Expression.Convert(
-                        Expression.Call(
-                            mInfo_CreateDelegate,
+                        Expression.Call(mInfo_CreateDelegate,
                                 Expression.Constant(typeof(StringResolver), typeof(Type)),
                                 Expression.Convert(pResolver, DynamicResolverType),
                                 Expression.Constant(mInfo_GetStringLiteral, typeof(MethodInfo))),
@@ -88,8 +86,7 @@
                 var pResolver = Expression.Parameter(typeof(object), "resolver");
                 getSignatureResolver = Expression.Lambda<Func<object, SignatureResolver>>(
                     Expression.Convert(
-                        Expression.Call(
-                            mInfo_CreateDelegate,
+                        Expression.Call(mInfo_CreateDelegate,
                                 Expression.Constant(typeof(SignatureResolver), typeof(Type)),
                                 Expression.Convert(pResolver, DynamicResolverType),
                                 Expression.Constant(mInfo_ResolveSignature, typeof(MethodInfo))),
@@ -108,8 +105,7 @@
                     new Type[] { typeof(Type), typeof(MethodInfo) });
                 getTypeFromHandle = Expression.Lambda<Func<TypeFromHandleUnsafe>>(
                     Expression.Convert(
-                        Expression.Call(
-                            createDelegateMethod,
+                        Expression.Call(createDelegateMethod,
                                 Expression.Constant(typeof(TypeFromHandleUnsafe), typeof(Type)),
                                 Expression.Constant(mInfo_GetTypeFromHandleUnsafe, typeof(MethodInfo))),
                         typeof(TypeFromHandleUnsafe))
@@ -141,8 +137,7 @@
                 var pType = Expression.Parameter(typeof(Type), "type");
                 var pMethodHandle = Expression.Parameter(typeof(IntPtr), "methodHandle");
                 getMethodFromHandles = Expression.Lambda<Func<Type, IntPtr, MethodBase>>(
-                                Expression.Call(
-                                    mInfo_GetMethodBase,
+                                Expression.Call(mInfo_GetMethodBase,
                                     Expression.Convert(pType, RuntimeTypeType),
                                     Expression.New(ctor_RuntimeMethodHandleInternal, pMethodHandle)),
                                 pType, pMethodHandle
@@ -157,8 +152,7 @@
                 var pType = Expression.Parameter(typeof(Type), "type");
                 var pFieldHandle = Expression.Parameter(typeof(IntPtr), "fieldHandle");
                 getFieldFromHandles = Expression.Lambda<Func<Type, IntPtr, FieldInfo>>(
-                                Expression.Call(
-                                    mInfo_GetFieldInfo,
+                                Expression.Call(mInfo_GetFieldInfo,
                                     Expression.Convert(pType, RuntimeTypeType),
                                     Expression.New(ctor_RuntimeFieldInfoStub, pFieldHandle, Expression.Constant(null, typeof(object)))),
                                 pType, pFieldHandle
@@ -167,13 +161,15 @@
             return (type, fHandle) => getFieldFromHandles(type, fHandle);
         }
         //
+        static bool? UseRuntimeHelpersPrepareMethod = null;
         public static void TryPrepareMethod(MethodBase method) {
+            if(method.IsGenericMethod || method.IsGenericMethodDefinition)
+                return;
             try {
-                if(method.IsGenericMethod || method.IsGenericMethodDefinition)
-                    return;
                 var mInfo = method as MethodInfo;
                 if(mInfo != null) {
-                    if(mInfo.ReturnType.IsGenericParameter || mInfo.ReturnType.IsGenericTypeDefinition)
+                    var returnType = mInfo.ReturnType;
+                    if(returnType.IsGenericParameter || returnType.IsGenericTypeDefinition)
                         return;
                     var methodParams = method.GetParameters();
                     for(int i = 0; i < methodParams.Length; i++) {
@@ -182,9 +178,13 @@
                             return;
                     }
                 }
-                RuntimeHelpers.PrepareMethod(method.MethodHandle);
+                if(UseRuntimeHelpersPrepareMethod.GetValueOrDefault(true))
+                    RuntimeHelpers.PrepareMethod(method.MethodHandle);
             }
             catch { }
+        }
+        public static void DisableUsingRuntimeHelpersPrepareMethod() {
+            UseRuntimeHelpersPrepareMethod = false;
         }
     }
 }
