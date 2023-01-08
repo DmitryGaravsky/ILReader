@@ -6,6 +6,7 @@
     using ILReader.Readers;
 
     sealed class OperandReaderContext : OperandReaderContextReal, IOperandReaderContext {
+        readonly static object[] NoVariables = new object[0];
         readonly Module module;
         readonly Type[] methodArguments;
         readonly Type[] typeArguments;
@@ -18,31 +19,30 @@
             var implFlags = method.GetMethodImplementationFlags();
             this.initLocals = (methodBody != null) && methodBody.InitLocals;
             this.maxStackSize = (methodBody != null) ? methodBody.MaxStackSize : 0;
-            this.@this = method.DeclaringType;
-            this.variables = (methodBody != null) ? methodBody.LocalVariables.ToArray() : new object[] { };
+            var declaringType = method.DeclaringType;
+            this.@this = declaringType;
+            this.variables = (methodBody != null) ? methodBody.LocalVariables.ToArray() : NoVariables;
             this.arguments = method.GetParameters();
             // method
             ConstructorInfo cInfo = method as ConstructorInfo;
             if(cInfo != null) {
                 this.methodSpec =
                     (cInfo.IsStatic ? "static " : string.Empty) + ".ctor " +
-                    cInfo.DeclaringType.ToString() + " " + implFlags.ToString().ToLower();
+                    declaringType.ToString() + " " + GetImplFlagString(implFlags);
             }
             MethodInfo mInfo = method as MethodInfo;
             if(mInfo != null) {
+                var retType = mInfo.ReturnType;
                 this.methodSpec =
                     (mInfo.IsStatic ? "static " : "instance ") +
-                    ((mInfo.ReturnType != null && mInfo.ReturnType != typeof(void)) ? mInfo.ReturnType.ToString() + " " : "void ") +
-                    mInfo.Name + " " + implFlags.ToString().ToLower();
+                    ((retType != null && retType != typeof(void)) ? retType.ToString() + " " : "void ") +
+                    mInfo.Name + " " + GetImplFlagString(implFlags);
             }
-            methodArguments = method.IsGenericMethod ?
-                method.GetGenericArguments() : null;
-            typeArguments = (method.DeclaringType != null) && method.DeclaringType.IsGenericType ?
-                method.DeclaringType.GetGenericArguments() : null;
+            methodArguments = method.IsGenericMethod ? method.GetGenericArguments() : null;
+            typeArguments = (declaringType != null) && declaringType.IsGenericType ? declaringType.GetGenericArguments() : null;
             //
-            this.ILBytes = (methodBody != null) ? methodBody.GetILAsByteArray() : null;
-            this.exceptionHandlingClauses = (methodBody != null) ? 
-                methodBody.ExceptionHandlingClauses.GetEnumerator() : null;
+            this.ILBytes = methodBody?.GetILAsByteArray();
+            this.exceptionHandlingClauses = methodBody?.ExceptionHandlingClauses.GetEnumerator();
         }
         //
         public OperandReaderContextType Type {
@@ -82,7 +82,7 @@
         #endregion Resolve
         protected override string VariableToString(object variable) {
             var variableInfo = (LocalVariableInfo)variable;
-            string variableStr = TypeToString(variableInfo.LocalType) + 
+            string variableStr = TypeToString(variableInfo.LocalType) +
                 " (" + variableInfo.LocalIndex.ToString() + ")";
             return variableInfo.IsPinned ? variableStr + " (pinned)" : variableStr;
         }

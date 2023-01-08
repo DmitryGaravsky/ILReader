@@ -37,19 +37,19 @@ namespace ILReader.Context {
             else {
                 this.ILBytes = new byte[ILGen.ILOffset];
                 RTTypes.CopyILStream(ILGen, ILBytes);
-                // TODO
             }
         }
         void InitMethodSpec(DynamicMethod method) {
             var implFlags = method.GetMethodImplementationFlags();
+            var retType = method.ReturnType;
             this.methodSpec = "dynamic " +
                 (method.IsStatic ? "static " : "instance ") +
-                ((method.ReturnType != null && method.ReturnType != typeof(void)) ? method.ReturnType.ToString() + " " : "void ") +
-                method.Name + " " + implFlags.ToString().ToLower();
+                ((retType != null && retType != typeof(void)) ? retType.ToString() + " " : "void ") +
+                method.Name + " " + GetImplFlagString(implFlags);
         }
         void InitVariables(ILGenerator ILGen) {
             var localSig = RTTypes.GetLocalSignature(ILGen);
-            this.variables = new Readers.LocalSignatureReader(localSig).Locals;
+            this.variables = new LocalSignatureReader(localSig).Locals;
         }
         public OperandReaderContextType Type {
             get { return OperandReaderContextType.DynamicMethod; }
@@ -107,7 +107,7 @@ namespace ILReader.Context {
         }
         #endregion Resolve
         protected override string VariableToString(object variable) {
-            var varSig = (Readers.LocalVarSig)variable;
+            var varSig = (LocalVarSig)variable;
             string variableStr = TypeToString(varSig.Type);
             return varSig.IsPinned ? variableStr + " (pinned)" : variableStr;
         }

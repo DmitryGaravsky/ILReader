@@ -128,7 +128,6 @@
             null, new[] { RuntimeTypeType, RuntimeTypeAssembly.GetType("System.IRuntimeFieldInfo") }, null);
         static readonly ConstructorInfo ctor_RuntimeFieldInfoStub = RuntimeFieldInfoStubType.GetConstructor(BF.Instance | BF.Public,
             null, new[] { typeof(IntPtr), typeof(object) }, null);
-
         //
         internal delegate MethodBase MethodFromHandles(Type type, IntPtr methodHandle);
         static Func<Type, IntPtr, MethodBase> getMethodFromHandles = null;
@@ -163,6 +162,8 @@
         //
         static bool? UseRuntimeHelpersPrepareMethod = null;
         public static void TryPrepareMethod(MethodBase method) {
+            if(!UseRuntimeHelpersPrepareMethod.GetValueOrDefault(true))
+                return;
             if(method.IsGenericMethod || method.IsGenericMethodDefinition)
                 return;
             try {
@@ -173,13 +174,12 @@
                         return;
                     var methodParams = method.GetParameters();
                     for(int i = 0; i < methodParams.Length; i++) {
-                        if(methodParams[i].ParameterType.IsGenericParameter ||
-                            methodParams[i].ParameterType.IsGenericTypeDefinition)
+                        var pType = methodParams[i].ParameterType;
+                        if(pType.IsGenericParameter || pType.IsGenericTypeDefinition)
                             return;
                     }
                 }
-                if(UseRuntimeHelpersPrepareMethod.GetValueOrDefault(true))
-                    RuntimeHelpers.PrepareMethod(method.MethodHandle);
+                RuntimeHelpers.PrepareMethod(method.MethodHandle);
             }
             catch { }
         }

@@ -1,5 +1,6 @@
 namespace ILReader.Context {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Reflection;
     using ILReader.Dump;
@@ -39,6 +40,8 @@ namespace ILReader.Context {
                 else
                     yield return new Readers.MetadataItem(".locals", GetLocals());
             }
+            //
+            yield return new Readers.MetadataItem(".declaringType", @this.ToString());
         }
         protected IEnumerable<Readers.IMetadataItem> GetArgs() {
             for(int i = 0; i < arguments.Length; i++)
@@ -47,6 +50,10 @@ namespace ILReader.Context {
         protected IEnumerable<Readers.IMetadataItem> GetLocals() {
             for(int i = 0; i < variables.Length; i++)
                 yield return new Readers.MetadataItem("[" + i.ToString() + "]", VariableToString(variables[i]));
+        }
+        readonly static ConcurrentDictionary<int, string> implFlatStrings = new ConcurrentDictionary<int, string>();
+        protected static string GetImplFlagString(MethodImplAttributes implFlags) {
+            return implFlatStrings.GetOrAdd((int)implFlags, flags => ((MethodImplAttributes)flags).ToString().ToLower());
         }
         // Body
         readonly static byte[] EmptyIL = new byte[] { };
@@ -63,10 +70,8 @@ namespace ILReader.Context {
         protected readonly Dictionary<int, byte[]> signatureTokens = new Dictionary<int, byte[]>();
         protected static T GetOrCache<T>(Dictionary<int, T> tokens, int token, Func<int, T> getFunc) {
             T result;
-            if(!tokens.TryGetValue(token, out result)) {
-                result = getFunc(token);
-                tokens.Add(token, result);
-            }
+            if(!tokens.TryGetValue(token, out result)) 
+                tokens.Add(token, result = getFunc(token));
             return result;
         }
         // Dump
