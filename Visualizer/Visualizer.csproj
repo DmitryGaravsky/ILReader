@@ -1,19 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <ProjectGuid>{DB615380-3D2B-49A1-8E55-EF6EB65FC40E}</ProjectGuid>
     <EnableDefaultItems>False</EnableDefaultItems>
     <OutputType>Library</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>ILReader.Visualizer</RootNamespace>
     <AssemblyName>ILReader.Visualizer</AssemblyName>
-    <OutputPath>..\bin\</OutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
     <EmbeddedResourceUseDependentUponConvention>False</EmbeddedResourceUseDependentUponConvention>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
 
   <ItemGroup>
@@ -86,8 +85,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Analyzer\Analyzer.csproj"/>
-    <ProjectReference Include="..\Core\Core.csproj"/>
+    <ProjectReference Include="..\Analyzer\Analyzer.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <PackageReference Include="System.Resources.Extensions" />
   </ItemGroup>
-
 </Project>

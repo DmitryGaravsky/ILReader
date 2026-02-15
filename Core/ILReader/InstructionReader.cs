@@ -82,10 +82,11 @@
             readonly LazyRef<byte[]> bytes;
             readonly object rawOperand;
             readonly short? argIndex, locIndex;
+            readonly OpCodeInfo opCodeInfo;
             internal Instruction(int index, IBinaryReader binaryReader, IOperandReaderContext context) {
                 this.Index = index;
                 this.Offset = binaryReader.Offset;
-                this.OpCode = OpCodeReader.ReadOpCode(binaryReader);
+                this.opCodeInfo = OpCodeReader.ReadOpCode(binaryReader);
                 // Operand
                 bool argumentAware = OperandReader.IsArgumentAware(OpCode);
                 if(argumentAware) {
@@ -126,8 +127,7 @@
                 Depth++;
             }
             public OpCode OpCode {
-                get;
-                private set;
+                get { return opCodeInfo.OpCode; }
             }
             public object Operand {
                 get;
@@ -174,7 +174,7 @@
         #region Empty
         internal static readonly IILReader Empty = new InstructionReaderEmpty();
         sealed class InstructionReaderEmpty : InstructionReader {
-            internal InstructionReaderEmpty() 
+            internal InstructionReaderEmpty()
                 : base(null, null) {
             }
             protected override string GetName(IOperandReaderContext context) {

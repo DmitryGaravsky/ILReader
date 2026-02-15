@@ -1,39 +1,43 @@
 ﻿namespace ILReader.DebuggerVisualizer {
+    using System;
+    using System.IO;
+    using System.Reflection;
     using ILReader.Readers;
     using ILReader.Visualizer.UI;
     using Microsoft.VisualStudio.DebuggerVisualizers;
 
     public class DebuggerSide : DialogDebuggerVisualizer {
-        protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider) {
-            ShowInstructionsWindow(windowService, objectProvider.GetData());
+        public DebuggerSide()
+            : base(FormatterPolicy.Json) {
         }
-        protected void ShowInstructionsWindow(IDialogVisualizerService windowService, System.IO.Stream data) {
+        protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider) {
+            var data = objectProvider.GetData();
             using(data) {
-                var reader = CreateReader(data);
-                using(var form = new InstructionsWindow(reader) { Text = reader.Name })
+                IILReader reader = CreateReader(data);
+                using(var form = new InstructionsWindow(reader) { Text = reader.Name }) {
                     windowService.ShowDialog(form);
+                }
             }
         }
-        IILReader CreateReader(System.IO.Stream data) {
-            var cfg = ILReader.Configuration.Resolve(data);
+        static IILReader CreateReader(Stream data) {
+            var cfg = Configuration.Resolve(data);
             return cfg.GetReader(data);
         }
     }
+    //
     public class ILDumpObjectSource : VisualizerObjectSource {
-        public override void GetData(object source, System.IO.Stream data) {
-            var methodBase =
-                (source as System.Reflection.MethodBase) ??
-                ((source is System.Delegate) ? ((System.Delegate)source).Method : null);
+        public override void GetData(object source, Stream data) {
+            MethodBase methodBase = (source as MethodBase) ?? ((source is Delegate d) ? d.Method : null);
             if(methodBase != null) {
                 try {
                     var reader = CreateReader(methodBase) as Dump.ISupportDump;
-                    if(reader != null) reader.Dump(data);
+                    reader?.Dump(data);
                 }
                 catch { }
             }
         }
-        IILReader CreateReader(System.Reflection.MethodBase methodBase) {
-            var cfg = ILReader.Configuration.Resolve(methodBase);
+        static IILReader CreateReader(MethodBase methodBase) {
+            var cfg = Configuration.Resolve(methodBase);
             return cfg.GetReader(methodBase);
         }
     }

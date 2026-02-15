@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <ProjectGuid>{6AC34B34-5D31-46BD-B354-6F176378E5AB}</ProjectGuid>
     <EnableDefaultItems>False</EnableDefaultItems>
@@ -8,16 +7,14 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>ILReader.DebuggerVisualizer</RootNamespace>
     <AssemblyName>ILReader.DebuggerVisualizer.17.0</AssemblyName>
-    <OutputPath>..\bin\</OutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
     <EmbeddedResourceUseDependentUponConvention>False</EmbeddedResourceUseDependentUponConvention>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.DebuggerVisualizers" Version="17.0.*" />
+    <PackageReference Include="Microsoft.VisualStudio.DebuggerVisualizers" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Analyzer\Analyzer.csproj" />
@@ -31,16 +28,20 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Compile Include="Tests\Visualizers.cs" />
-    <PackageReference Include="NUnit" Version="3.13.*" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.3.*" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
 
   <PropertyGroup>
-    <PostBuildEvent>
-      xcopy "$(TargetDir)FastAccessors.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y
-      xcopy "$(TargetDir)ILReader.Core.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y
-      xcopy "$(TargetDir)ILReader.Visualizer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y
-      xcopy "$(TargetDir)ILReader.Analyzer.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y
-      xcopy "$(TargetDir)ILReader.DebuggerVisualizer.17.0.dll" "%25USERPROFILE%25\My Documents\Visual Studio 2022\Visualizers" /y</PostBuildEvent>
+    <InstallVisualizer>true</InstallVisualizer>
+    <VisualizerInstallDir>$(USERPROFILE)\My Documents\Visual Studio 2022\Visualizers</VisualizerInstallDir>
   </PropertyGroup>
+  <Target Name="InstallVisualizerToVS" AfterTargets="Build" Condition="'$(InstallVisualizer)' == 'true'">
+    <MakeDir Directories="$(VisualizerInstallDir)" Condition="!Exists('$(VisualizerInstallDir)')" />
+    <Copy SourceFiles="$(TargetDir)FastAccessors.dll" DestinationFolder="$(VisualizerInstallDir)\" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(TargetDir)ILReader.Core.dll" DestinationFolder="$(VisualizerInstallDir)\" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(TargetDir)ILReader.Visualizer.dll" DestinationFolder="$(VisualizerInstallDir)\" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(TargetDir)ILReader.Analyzer.dll" DestinationFolder="$(VisualizerInstallDir)\" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(TargetDir)ILReader.DebuggerVisualizer.17.0.dll" DestinationFolder="$(VisualizerInstallDir)\" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

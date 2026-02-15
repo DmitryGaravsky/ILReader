@@ -39,6 +39,7 @@
             Assert.AreEqual(0, pattern.StartIndex);
             Assert.AreEqual(3, pattern.Result.Length);
         }
+#if !NET
         [Test]
         public void Test_NotSupportedPattern() {
             var pattern = Analyzer.NotSupported.Instance;
@@ -49,6 +50,7 @@
             Assert.AreEqual(0, pattern.StartIndex);
             Assert.AreEqual(3, pattern.Result.Length);
         }
+#endif
     }
     [TestFixture]
     public class Boxing_Patterns_Tests {

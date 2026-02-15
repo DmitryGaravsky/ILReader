@@ -1,0 +1,9 @@
+<Project>
+  <!-- Ensure each TargetFramework gets its own intermediate output folder.
+       This prevents cross-TFM collisions, especially when projects override OutputPath
+       and/or disable AppendTargetFrameworkToOutputPath. -->
+  <PropertyGroup>
+    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'==''">obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\$(TargetFramework)\</IntermediateOutputPath>
+  </PropertyGroup>
+</Project>

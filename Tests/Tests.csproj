@@ -3,28 +3,30 @@
     <ProjectGuid>f0f75a2c-f2a7-49f4-8410-21ac62bb01d6</ProjectGuid>
     <EnableDefaultItems>False</EnableDefaultItems>
     <OutputType>Library</OutputType>
-    <TargetFramework>net472</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
     <RootNamespace>ILReader.Core.Tests</RootNamespace>
     <AssemblyName>ILReader.Core.Tests</AssemblyName>
-    <OutputPath>..\bin\</OutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
     <EmbeddedResourceUseDependentUponConvention>False</EmbeddedResourceUseDependentUponConvention>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+  
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeCoverage" Version="17.4.1" />
-    <PackageReference Include="Microsoft.NET.Test.SDK" Version="17.4.1" />
-    <PackageReference Include="NUnit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.3.1" />
+    <PackageReference Include="Microsoft.NET.Test.SDK" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Analyzer\Analyzer.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
     <ProjectReference Include="..\Visualizer\Visualizer.csproj" />
   </ItemGroup>
 
@@ -33,8 +35,9 @@
     <Compile Include="Core\BinaryReader.cs" />
     <Compile Include="Core\ILReader.cs" />
     <Compile Include="Core\LocalSignatureReader.cs" />
+    <Compile Include="Core\OpCodeReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Visualizer\InstructionsWindow.cs" />
   </ItemGroup>
-  
+
  </Project>

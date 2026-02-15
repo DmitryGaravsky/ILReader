@@ -1,15 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{84935330-8317-467A-BD8F-84DE34A06905}</ProjectGuid>
     <EnableDefaultItems>False</EnableDefaultItems>
     <OutputType>Library</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
 
     <RootNamespace>ILReader.Analyzer</RootNamespace>
     <AssemblyName>ILReader.Analyzer</AssemblyName>
-    <OutputPath>..\bin\</OutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
     <EmbeddedResourceUseDependentUponConvention>False</EmbeddedResourceUseDependentUponConvention>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

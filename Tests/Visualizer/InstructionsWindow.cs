@@ -1,4 +1,5 @@
-﻿namespace ILReader.Visualizer.Tests {
+﻿#if !NET
+namespace ILReader.Visualizer.Tests {
     using ILReader.Visualizer.UI;
     using NUnit.Framework;
 
@@ -12,8 +13,9 @@
             using(var ms = new System.IO.MemoryStream()) {
                 source.Dump(ms);
                 ms.Seek(0, System.IO.SeekOrigin.Begin);
-                cfg = Configuration.Resolve(ms);
-                var reader = cfg.GetReader(ms);
+                //
+                var dumpCfg = Configuration.Resolve(ms);
+                var reader = dumpCfg.GetReader(ms);
                 using(var window = new InstructionsWindow(reader)) {
                     window.Text = reader.Name;
                     window.ShowDialog();
@@ -22,3 +24,4 @@
         }
     }
 }
+#endif

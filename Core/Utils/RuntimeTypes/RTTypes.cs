@@ -12,9 +12,12 @@
         internal static readonly Type RTDynamicMethodType = DynamicMethodType.GetNestedType("RTDynamicMethod", BF.NonPublic);
         internal static readonly Type ILGeneratorType = typeof(ILGenerator);
         //
-        static readonly int fld_m_owner = "m_owner".@ƒRegister(RTDynamicMethodType);
+        static int? fld_m_owner;
         internal static DynamicMethod GetOwnerDynamicMethod(object methodBase) {
-            return methodBase.@ƒ(fld_m_owner) as DynamicMethod;
+            if(RTDynamicMethodType == null)
+                return null;
+            fld_m_owner = fld_m_owner ?? "m_owner".@ƒRegister(RTDynamicMethodType);
+            return methodBase.@ƒ(fld_m_owner.Value) as DynamicMethod;
         }
         //
         static readonly int fld_m_resolver = "m_resolver".@ƒRegister(DynamicMethodType);

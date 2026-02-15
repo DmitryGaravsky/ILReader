@@ -1,0 +1,54 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  test:
+    name: Tests (${{ matrix.framework }}, Debug)
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: [ "net8.0", "net472" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Для net472 иногда нужен MSBuild/VS Build Tools environment
+      - name: Setup MSBuild (net472 only)
+        if: matrix.framework == 'net472'
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.USERPROFILE }}\.nuget\packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.fsproj', '**/packages.lock.json', '**/Directory.Packages.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore ILReader.2022.sln
+
+      - name: Build (Debug)
+        run: dotnet build ILReader.2022.sln -c Debug --no-restore
+
+      - name: Test (${{ matrix.framework }})
+        run: dotnet test Tests/Tests.csproj -c Debug -f ${{ matrix.framework }} --no-build --verbosity normal --logger "trx;LogFileName=test-results-${{ matrix.framework }}.trx" --results-directory "TestResults/${{ matrix.framework }}"
+
+      - name: Upload test results (${{ matrix.framework }})
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.framework }}
+          path: TestResults/${{ matrix.framework }}/*.trx

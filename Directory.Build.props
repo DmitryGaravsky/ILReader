@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <!-- Ensure distinct output per TFM/configuration across the repo. -->
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+    <BaseOutputPath>..\bin.NetFW\</BaseOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <BaseOutputPath>..\bin.NET\</BaseOutputPath>
+  </PropertyGroup>
+</Project>

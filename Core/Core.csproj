@@ -1,14 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{2FDE2DC0-F1DC-4090-84CD-58C0204CC63D}</ProjectGuid>
     <EnableDefaultItems>False</EnableDefaultItems>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>net472;net6.0</TargetFrameworks>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
 
     <RootNamespace>ILReader</RootNamespace>
     <AssemblyName>ILReader.Core</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
     <EmbeddedResourceUseDependentUponConvention>False</EmbeddedResourceUseDependentUponConvention>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -19,25 +18,18 @@
       Common Intermediate Language reader, analyzer and visualizer tool.
       Allows you to access CIL-instructions of .Net method's bodies
     </Description>
-    <Copyright>Dmitry Garavsky, ©2022</Copyright>
+    <Copyright>Dmitry Garavsky, ©2026</Copyright>
     <PackageProjectUrl>https://github.com/DmitryGaravsky/ILReader</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DmitryGaravsky/ILReader</RepositoryUrl>
     <PackageTags>NET;MSIL;ILReader</PackageTags>
     <PackageLicenseFile>LICENSE.TXT</PackageLicenseFile>
     <PackageReadmeFile>README.MD</PackageReadmeFile>
     <PackageOutputPath>..\bin</PackageOutputPath>
-    <FileVersion>1.0.0.4</FileVersion>
-    <AssemblyVersion>1.0.0.4</AssemblyVersion>
-    <PackageReleaseNotes>v1.0.0.4
- - Performance optimization + concurrency support + small fixes</PackageReleaseNotes>
-    <Version>1.0.0.4</Version>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net472' ">
-    <OutputPath>..\bin.NetFW\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
-    <OutputPath>..\bin.NET\</OutputPath>
+    <FileVersion>1.0.0.5</FileVersion>
+    <AssemblyVersion>1.0.0.5</AssemblyVersion>
+    <PackageReleaseNotes>v1.0.0.5
+ - NET8 support + some improvements</PackageReleaseNotes>
+    <Version>1.0.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -99,6 +91,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FastAccessors" Version="1.0.*" />
+    <PackageReference Include="FastAccessors" />
   </ItemGroup>
 </Project>
