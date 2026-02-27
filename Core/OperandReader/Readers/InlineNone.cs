@@ -1,7 +1,7 @@
 ﻿namespace ILReader.Readers {
     // No operand.
-    sealed class InlineNoneOperandReader : IOperandReader {
-        object IOperandReader.Read(IBinaryReader reader, Context.IOperandReaderContext context) {
+    sealed class InlineNoneOperandReader : OperandReader {
+        public sealed override object Read(ILBytesReader reader, Context.IOperandReaderContext context) {
             return null;
         }
     }

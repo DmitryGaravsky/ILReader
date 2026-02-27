@@ -1,4 +1,4 @@
-namespace ILReader.Readers {
+﻿namespace ILReader.Readers {
     using System.IO;
     using System.Reflection;
 
@@ -16,16 +16,16 @@ namespace ILReader.Readers {
         }
         IILReader CreateInstructionReader(MethodBase method, IILReaderConfiguration configuration) {
             var context = configuration.CreateOperandReaderContext(method);
-            var binaryReader = configuration.CreateBinaryReader(context.GetIL());
-            return CreateInstructionReader(binaryReader, context);
+            var bytesReader = configuration.CreateBytesReader(context.GetIL());
+            return CreateInstructionReader(bytesReader, context);
         }
         IILReader CreateInstructionReader(Stream dump, IILReaderConfiguration configuration) {
             var context = configuration.CreateOperandReaderContext(dump);
-            var binaryReader = configuration.CreateBinaryReader(context.GetIL());
-            return CreateInstructionReader(binaryReader, context);
+            var bytesReader = configuration.CreateBytesReader(context.GetIL());
+            return CreateInstructionReader(bytesReader, context);
         }
-        IILReader CreateInstructionReader(IBinaryReader binaryReader, Context.IOperandReaderContext context) {
-            return new InstructionReader(binaryReader, context);
+        IILReader CreateInstructionReader(ILBytesReader bytesReader, Context.IOperandReaderContext context) {
+            return new InstructionReader(bytesReader, context);
         }
         //
         IILReader IILReaderFactory.CreateReader() {

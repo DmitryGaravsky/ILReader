@@ -28,7 +28,7 @@ namespace ILReader.Context {
             get { return argument ? arguments[index] : variables[index]; }
         }
         public IEnumerable<Readers.IMetadataItem> GetMetadata() {
-            if(arguments == null || arguments.Length == 0 && methodSpec != null)
+            if(methodSpec != null && (arguments == null || arguments.Length == 0))
                 yield return new Readers.MetadataItem(methodSpec.ToString(), null);
             if(arguments != null && arguments.Length > 0 && methodSpec != null)
                 yield return new Readers.MetadataItem(methodSpec.ToString(), GetArgs());
@@ -99,9 +99,14 @@ namespace ILReader.Context {
             { typeof(string), "string" },
             { typeof(bool), "bool" },
             { typeof(char), "char" },
+            { typeof(sbyte), "sbyte" },
             { typeof(byte), "byte" },
+            { typeof(short), "short" },
+            { typeof(ushort), "ushort" },
             { typeof(int), "int" },
+            { typeof(uint), "uint" },
             { typeof(long), "long" },
+            { typeof(ulong), "ulong" },
             { typeof(decimal), "decimal" },
             { typeof(float), "float" },
             { typeof(double), "double" },

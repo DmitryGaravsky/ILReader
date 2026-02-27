@@ -1,47 +1,50 @@
 ﻿namespace ILReader.Readers {
-    sealed class BinaryReader : IBinaryReader {
+    public sealed class ILBytesReader {
         readonly byte[] bytes; int ptr;
-        public BinaryReader(byte[] bytes) {
+        public ILBytesReader(byte[] bytes) {
             this.bytes = bytes;
         }
-        bool IBinaryReader.CanRead() {
+        public bool CanRead() {
             return ptr < bytes.Length;
         }
-        byte IBinaryReader.ReadByte() {
+        public byte ReadByte() {
             return bytes[ptr++];
         }
-        bool IBinaryReader.ReadBoolean() {
+        public sbyte ReadSByte() {
+            return (sbyte)bytes[ptr++];
+        }
+        public bool ReadBoolean() {
             return bytes[ptr++] != 0;
         }
-        short IBinaryReader.ReadShort() {
+        public short ReadShort() {
             ptr += 2;
             return System.BitConverter.ToInt16(bytes, ptr - 2);
         }
-        int IBinaryReader.ReadInt() {
+        public int ReadInt() {
             ptr += 4;
             return System.BitConverter.ToInt32(bytes, ptr - 4);
         }
-        float IBinaryReader.ReadFloat() {
+        public float ReadFloat() {
             ptr += 4;
             return System.BitConverter.ToSingle(bytes, ptr - 4);
         }
-        long IBinaryReader.ReadLong() {
+        public long ReadLong() {
             ptr += 8;
             return System.BitConverter.ToInt64(bytes, ptr - 8);
         }
-        double IBinaryReader.ReadDouble() {
+        public double ReadDouble() {
             ptr += 8;
             return System.BitConverter.ToDouble(bytes, ptr - 8);
         }
         //
-        int IBinaryReader.Offset {
+        public int Offset {
             get { return ptr; }
         }
-        byte IBinaryReader.Current {
+        public byte Current {
             get { return bytes[ptr]; }
         }
         //
-        byte[] IBinaryReader.Read(int offset, int size) {
+        public byte[] Read(int offset, int size) {
             byte[] result = new byte[size];
             System.Array.Copy(bytes, offset, result, 0, size);
             return result;

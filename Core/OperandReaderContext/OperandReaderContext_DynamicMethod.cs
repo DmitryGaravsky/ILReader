@@ -1,5 +1,6 @@
-namespace ILReader.Context {
+﻿namespace ILReader.Context {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
     using System.Reflection.Emit;
     using ILReader.Monads;
@@ -10,10 +11,10 @@ namespace ILReader.Context {
         RTTypes.TokenResolver resolveToken;
         RTTypes.StringResolver resolveString;
         RTTypes.SignatureResolver resolveSignature;
-        //
         RTTypes.TypeFromHandleUnsafe typeFromHandle;
         RTTypes.MethodFromHandles methodFromHandles;
         RTTypes.FieldFromHandles fieldFromHandles;
+        IEnumerator<RTTypes.DynamicExceptionClause> exceptionHandlingClauses;
         public OperandReaderContext_DynamicMethod(DynamicMethod method) {
             this.name = method.Name;
             ILGenerator ILGen = method.GetILGenerator();
@@ -33,6 +34,8 @@ namespace ILReader.Context {
                 this.typeFromHandle = RTTypes.GetTypeFromHandleUnsafe();
                 this.methodFromHandles = RTTypes.GetMethodFromHandles();
                 this.fieldFromHandles = RTTypes.GetFieldFromHandles();
+                var clauses = RTTypes.GetDynamicExceptionClauses(resolver);
+                this.exceptionHandlingClauses = clauses != null ? clauses.GetEnumerator() : null;
             }
             else {
                 this.ILBytes = new byte[ILGen.ILOffset];
@@ -42,8 +45,7 @@ namespace ILReader.Context {
         void InitMethodSpec(DynamicMethod method) {
             var implFlags = method.GetMethodImplementationFlags();
             var retType = method.ReturnType;
-            this.methodSpec = "dynamic " +
-                (method.IsStatic ? "static " : "instance ") +
+            this.methodSpec = "dynamic " + (method.IsStatic ? "static " : "instance ") +
                 ((retType != null && retType != typeof(void)) ? retType.ToString() + " " : "void ") +
                 method.Name + " " + GetImplFlagString(implFlags);
         }
@@ -75,7 +77,15 @@ namespace ILReader.Context {
         }
         public bool ResolveExceptionHandler(Func<int, IInstruction> getInstruction, out Readers.ExceptionHandler handler) {
             handler = null;
-            return false; // TODO
+            if(exceptionHandlingClauses != null) {
+                if(exceptionHandlingClauses.MoveNext()) {
+                    handler = new Readers.ExceptionHandler(getInstruction, exceptionHandlingClauses.Current);
+                    return true;
+                }
+                exceptionHandlingClauses.Dispose();
+                exceptionHandlingClauses = null;
+            }
+            return false;
         }
         //
         Type ResolveTypeCore(int typeToken) {

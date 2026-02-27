@@ -14,10 +14,10 @@
         readonly LazyRef<IInstruction[]> instructions;
         readonly LazyRef<ExceptionHandler[]> exceptionHandlers;
         readonly LazyRef<Action<Stream>> writeDump;
-        public InstructionReader(IBinaryReader binaryReader, IOperandReaderContext context) {
+        public InstructionReader(ILBytesReader bytesReader, IOperandReaderContext context) {
             name = new LazyRef<string>(() => GetName(context));
             metadata = new LazyRef<IEnumerable<IMetadataItem>>(() => GetMetadata(context));
-            instructions = new LazyRef<IInstruction[]>(() => GetInstructions(binaryReader, context).ToArray());
+            instructions = new LazyRef<IInstruction[]>(() => GetInstructions(bytesReader, context).ToArray());
             exceptionHandlers = new LazyRef<ExceptionHandler[]>(() => GetExceptionHandlers(context).ToArray());
             writeDump = new LazyRef<Action<Stream>>(() => (stream) => WriteDump(context, stream));
         }
@@ -55,17 +55,32 @@
         IEnumerator IEnumerable.GetEnumerator() {
             return instructions.Value.GetEnumerator();
         }
-        protected virtual IEnumerable<IInstruction> GetInstructions(IBinaryReader binaryReader, IOperandReaderContext context) {
+        protected virtual IEnumerable<IInstruction> GetInstructions(ILBytesReader bytesReader, IOperandReaderContext context) {
             int index = 0;
-            while(binaryReader.CanRead())
-                yield return new Instruction(index++, binaryReader, context);
+            while(bytesReader.CanRead())
+                yield return new Instruction(index++, bytesReader, context);
         }
         protected virtual IEnumerable<ExceptionHandler> GetExceptionHandlers(IOperandReaderContext context) {
+            //   Within one handler the CLR exception table guarantees that the five boundary
+            //   offsets are queried in non-decreasing order:
+            //     TryStart <= TryEnd <= FilterStart <= HandlerStart <= HandlerEnd
+            //   A forward-only cursor therefore finds each offset in a single pass (O(n) total
+            //   instead of O(n) per offset), which is correct and intentional.
             ExceptionHandler current;
             while(context.ResolveExceptionHandler(GetGetInstruction(instructions.Value), out current))
                 yield return current.Advance(instructions.Value, x => ((Instruction)x).IncreaseDepth());
         }
         static Func<int, IInstruction> GetGetInstruction(IInstruction[] instructionsArray) {
+            // Returns a single-pass forward cursor over the instructions array.
+            //
+            // Design rationale:
+            //   This method is called INSIDE the while-condition of GetExceptionHandlers, so a
+            //   fresh cursor (index = 0) is created for every exception handler. There is no
+            //   shared state between handlers.
+            // Caveat:
+            //   If the IL is malformed and an offset is out of the expected order, the cursor
+            //   will not backtrack and will return null. The caller (ExceptionHandler.Advance)
+            //   must tolerate null boundary instructions produced in such degenerate cases.
             int index = 0;
             return offset => {
                 for(; index < instructionsArray.Length; index++) {
@@ -83,15 +98,15 @@
             readonly object rawOperand;
             readonly short? argIndex, locIndex;
             readonly OpCodeInfo opCodeInfo;
-            internal Instruction(int index, IBinaryReader binaryReader, IOperandReaderContext context) {
+            internal Instruction(int index, ILBytesReader bytesReader, IOperandReaderContext context) {
                 this.Index = index;
-                this.Offset = binaryReader.Offset;
-                this.opCodeInfo = OpCodeReader.ReadOpCode(binaryReader);
+                this.Offset = bytesReader.Offset;
+                this.opCodeInfo = OpCodeReader.ReadOpCode(bytesReader);
                 // Operand
                 bool argumentAware = OperandReader.IsArgumentAware(OpCode);
                 if(argumentAware) {
-                    this.Operand = OperandReader.ReadArg(binaryReader, context, OpCode.OperandType);
-                    argIndex = OperandReader.GetArgIndex(OpCode, binaryReader);
+                    this.Operand = OperandReader.ReadArg(bytesReader, context, OpCode.OperandType);
+                    argIndex = OperandReader.GetArgIndex(OpCode, bytesReader);
                     if(argIndex.Value > 0)
                         this.rawOperand = context[(short)(argIndex.Value - 1), true];
                     else
@@ -100,16 +115,16 @@
                 // Local
                 bool localAware = OperandReader.IsLocalAware(OpCode);
                 if(localAware) {
-                    this.Operand = OperandReader.Read(binaryReader, context, OpCode.OperandType);
-                    locIndex = OperandReader.GetLocalIndex(OpCode, binaryReader);
+                    this.Operand = OperandReader.Read(bytesReader, context, OpCode.OperandType);
+                    locIndex = OperandReader.GetLocalIndex(OpCode, bytesReader);
                     if(Operand == null)
                         this.rawOperand = context[locIndex.Value, false];
                 }
                 if(!localAware && !argumentAware)
-                    this.Operand = OperandReader.Read(binaryReader, context, OpCode.OperandType);
+                    this.Operand = OperandReader.Read(bytesReader, context, OpCode.OperandType);
                 // bytes
-                int size = binaryReader.Offset - Offset;
-                this.bytes = new LazyRef<byte[]>(() => binaryReader.Read(Offset, size));
+                int size = bytesReader.Offset - Offset;
+                this.bytes = new LazyRef<byte[]>(() => bytesReader.Read(Offset, size));
             }
             public int Index {
                 get;
@@ -183,7 +198,7 @@
             protected override IEnumerable<IMetadataItem> GetMetadata(IOperandReaderContext context) {
                 yield break;
             }
-            protected override IEnumerable<IInstruction> GetInstructions(IBinaryReader binaryReader, IOperandReaderContext context) {
+            protected override IEnumerable<IInstruction> GetInstructions(ILBytesReader bytesReader, IOperandReaderContext context) {
                 yield break;
             }
             protected override IEnumerable<ExceptionHandler> GetExceptionHandlers(IOperandReaderContext context) {
@@ -197,7 +212,7 @@
         #region Dump
         void ISupportDump.Dump(Stream stream) {
             IInstruction[] arr = instructions.Value;
-            if(arr != null && arr.Length >= 0)
+            if(arr != null && arr.Length > 0)
                 writeDump.Value(stream);
         }
         #endregion

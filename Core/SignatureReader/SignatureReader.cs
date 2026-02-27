@@ -4,18 +4,18 @@
     using System.Collections.Generic;
 
     class SignatureReader {
-        IBinaryReader binaryReader;
-        public SignatureReader(IBinaryReader binaryReader) {
-            this.binaryReader = binaryReader;
+        ILBytesReader bytesReader;
+        public SignatureReader(ILBytesReader bytesReader) {
+            this.bytesReader = bytesReader;
         }
         protected bool CanRead() {
-            return binaryReader.CanRead();
+            return bytesReader.CanRead();
         }
         protected byte Current() {
-            return binaryReader.Current;
+            return bytesReader.Current;
         }
         protected byte ReadByte() {
-            return binaryReader.ReadByte();
+            return bytesReader.ReadByte();
         }
         protected uint ReadCompressedUInt32() {
             byte current = ReadByte();
@@ -48,10 +48,10 @@
             get { return locals.Value; }
         }
         public LocalSignatureReader(byte[] signature)
-            : this(new BinaryReader(signature)) {
+            : this(new ILBytesReader(signature)) {
         }
-        public LocalSignatureReader(IBinaryReader binaryReader)
-            : base(binaryReader) {
+        public LocalSignatureReader(ILBytesReader bytesReader)
+            : base(bytesReader) {
             this.locals = new LazyRef<LocalVarSig[]>(() => ParseLocals().ToArray());
         }
         IEnumerable<LocalVarSig> ParseLocals() {

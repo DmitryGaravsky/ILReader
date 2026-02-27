@@ -2,9 +2,11 @@
     using System.Collections.Generic;
     using System.Reflection.Emit;
 
-    static class OperandReader {
-        static Dictionary<OperandType, IOperandReader> operandReadersCache = new Dictionary<OperandType, IOperandReader>();
-        static Dictionary<OperandType, IOperandReader> argumentReadersCache = new Dictionary<OperandType, IOperandReader>();
+    abstract class OperandReader {
+        public abstract object Read(ILBytesReader reader, Context.IOperandReaderContext context);
+        //
+        static Dictionary<OperandType, OperandReader> operandReadersCache = new Dictionary<OperandType, OperandReader>();
+        static Dictionary<OperandType, OperandReader> argumentReadersCache = new Dictionary<OperandType, OperandReader>();
         static OperandReader() {
             // Operand Readers
             operandReadersCache.Add(OperandType.InlineNone, new InlineNoneOperandReader());
@@ -28,7 +30,7 @@
             // 64bit
             operandReadersCache.Add(OperandType.InlineI8, new InlineI8OperandReader());
             operandReadersCache.Add(OperandType.InlineR, new InlineROperandReader());
-            
+
             // Argument Readers
             argumentReadersCache.Add(OperandType.InlineNone, new InlineNoneOperandReader());
             // 8bit
@@ -36,22 +38,20 @@
             // 16bit
             argumentReadersCache.Add(OperandType.InlineVar, new InlineVarArgReader());
         }
-        public static object Read(IBinaryReader binaryReader, Context.IOperandReaderContext context, OperandType operandType) {
-            IOperandReader reader;
-            if(operandReadersCache.TryGetValue(operandType, out reader))
-                return reader.Read(binaryReader, context);
+        public static object Read(ILBytesReader bytesReader, Context.IOperandReaderContext context, OperandType operandType) {
+            if(operandReadersCache.TryGetValue(operandType, out OperandReader reader))
+                return reader.Read(bytesReader, context);
             throw new System.NotSupportedException(operandType.ToString());
         }
-        public static object ReadArg(IBinaryReader binaryReader, Context.IOperandReaderContext context, OperandType operandType) {
-            IOperandReader reader;
-            if(argumentReadersCache.TryGetValue(operandType, out reader))
-                return reader.Read(binaryReader, context);
+        public static object ReadArg(ILBytesReader bytesReader, Context.IOperandReaderContext context, OperandType operandType) {
+            if(argumentReadersCache.TryGetValue(operandType, out OperandReader reader))
+                return reader.Read(bytesReader, context);
             throw new System.NotSupportedException(operandType.ToString());
         }
         public static bool IsArgumentAware(OpCode opCode) {
             return System.Array.IndexOf(argumentAwareOpcodeValues, opCode.Value) != -1;
         }
-        public static short GetArgIndex(OpCode opCode, IBinaryReader binaryReader) {
+        public static short GetArgIndex(OpCode opCode, ILBytesReader bytesReader) {
             short opcodeValue = opCode.Value;
             if(opcodeValue == ldarg_0_value)
                 return 0; // this
@@ -62,13 +62,13 @@
             if(opcodeValue == ldarg_3_value)
                 return 3;
             if(opcodeValue == ldarg_value || opcodeValue == starg_value || opcodeValue == ldarga_value)
-                return System.BitConverter.ToInt16(binaryReader.Read(binaryReader.Offset - 2, 2), 0);
-            return binaryReader.Read(binaryReader.Offset - 1, 1)[0];
+                return System.BitConverter.ToInt16(bytesReader.Read(bytesReader.Offset - 2, 2), 0);
+            return bytesReader.Read(bytesReader.Offset - 1, 1)[0];
         }
         public static bool IsLocalAware(OpCode opCode) {
             return System.Array.IndexOf(localAwareOpcodeValues, opCode.Value) != -1;
         }
-        public static short GetLocalIndex(OpCode opCode, IBinaryReader binaryReader) {
+        public static short GetLocalIndex(OpCode opCode, ILBytesReader bytesReader) {
             short opcodeValue = opCode.Value;
             if(opcodeValue == ldloc_0_value || opcodeValue == stloc_0_value)
                 return 0;
@@ -79,8 +79,8 @@
             if(opcodeValue == ldloc_3_value || opcodeValue == stloc_3_value)
                 return 3;
             if(opcodeValue == ldloc_value || opcodeValue == stloc_value || opcodeValue == ldloca_value)
-                return System.BitConverter.ToInt16(binaryReader.Read(binaryReader.Offset - 2, 2), 0);
-            return binaryReader.Read(binaryReader.Offset - 1, 1)[0];
+                return System.BitConverter.ToInt16(bytesReader.Read(bytesReader.Offset - 2, 2), 0);
+            return bytesReader.Read(bytesReader.Offset - 1, 1)[0];
         }
         #region OpCodes Data
         // Argument aware

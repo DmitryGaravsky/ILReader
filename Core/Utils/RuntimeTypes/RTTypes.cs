@@ -7,7 +7,7 @@
     using FastAccessors.Monads;
     using BF = System.Reflection.BindingFlags;
 
-    static class RTTypes {
+    static partial class RTTypes {
         internal static readonly Type DynamicMethodType = typeof(DynamicMethod);
         internal static readonly Type RTDynamicMethodType = DynamicMethodType.GetNestedType("RTDynamicMethod", BF.NonPublic);
         internal static readonly Type ILGeneratorType = typeof(ILGenerator);
@@ -53,11 +53,10 @@
         internal delegate string StringResolver(int token);
         internal delegate byte[] SignatureResolver(int token, int fromMethod);
         //
-        static Func<object, TokenResolver> getTokenResolver = null;
-        internal static TokenResolver GetTokenResolver(object resolver) {
-            if(getTokenResolver == null) {
+        static readonly Lazy<Func<object, TokenResolver>> getTokenResolver =
+            new Lazy<Func<object, TokenResolver>>(() => {
                 var pResolver = Expression.Parameter(typeof(object), "resolver");
-                getTokenResolver = Expression.Lambda<Func<object, TokenResolver>>(
+                return Expression.Lambda<Func<object, TokenResolver>>(
                     Expression.Convert(
                         Expression.Call(mInfo_CreateDelegate,
                                 Expression.Constant(typeof(TokenResolver), typeof(Type)),
@@ -65,14 +64,14 @@
                                 Expression.Constant(mInfo_ResolveToken, typeof(MethodInfo))),
                         typeof(TokenResolver)),
                     pResolver).Compile();
-            }
-            return getTokenResolver(resolver);
+            });
+        internal static TokenResolver GetTokenResolver(object resolver) {
+            return getTokenResolver.Value(resolver);
         }
-        static Func<object, StringResolver> getStringResolver = null;
-        internal static StringResolver GetStringResolver(object resolver) {
-            if(getStringResolver == null) {
+        static readonly Lazy<Func<object, StringResolver>> getStringResolver =
+            new Lazy<Func<object, StringResolver>>(() => {
                 var pResolver = Expression.Parameter(typeof(object), "resolver");
-                getStringResolver = Expression.Lambda<Func<object, StringResolver>>(
+                return Expression.Lambda<Func<object, StringResolver>>(
                     Expression.Convert(
                         Expression.Call(mInfo_CreateDelegate,
                                 Expression.Constant(typeof(StringResolver), typeof(Type)),
@@ -80,14 +79,14 @@
                                 Expression.Constant(mInfo_GetStringLiteral, typeof(MethodInfo))),
                         typeof(StringResolver)),
                     pResolver).Compile();
-            }
-            return getStringResolver(resolver);
+            });
+        internal static StringResolver GetStringResolver(object resolver) {
+            return getStringResolver.Value(resolver);
         }
-        static Func<object, SignatureResolver> getSignatureResolver = null;
-        internal static SignatureResolver GetSignatureResolver(object resolver) {
-            if(getSignatureResolver == null) {
+        static readonly Lazy<Func<object, SignatureResolver>> getSignatureResolver =
+            new Lazy<Func<object, SignatureResolver>>(() => {
                 var pResolver = Expression.Parameter(typeof(object), "resolver");
-                getSignatureResolver = Expression.Lambda<Func<object, SignatureResolver>>(
+                return Expression.Lambda<Func<object, SignatureResolver>>(
                     Expression.Convert(
                         Expression.Call(mInfo_CreateDelegate,
                                 Expression.Constant(typeof(SignatureResolver), typeof(Type)),
@@ -95,26 +94,27 @@
                                 Expression.Constant(mInfo_ResolveSignature, typeof(MethodInfo))),
                         typeof(SignatureResolver)),
                     pResolver).Compile();
-            }
-            return getSignatureResolver(resolver);
+            });
+        internal static SignatureResolver GetSignatureResolver(object resolver) {
+            return getSignatureResolver.Value(resolver);
         }
         //
         internal delegate Type TypeFromHandleUnsafe(IntPtr handle);
         static readonly MethodInfo mInfo_GetTypeFromHandleUnsafe = typeof(Type).GetMethod("GetTypeFromHandleUnsafe", BF.Static | BF.NonPublic);
-        static Func<TypeFromHandleUnsafe> getTypeFromHandle = null;
-        internal static TypeFromHandleUnsafe GetTypeFromHandleUnsafe() {
-            if(getTypeFromHandle == null) {
+        static readonly Lazy<Func<TypeFromHandleUnsafe>> getTypeFromHandle =
+            new Lazy<Func<TypeFromHandleUnsafe>>(() => {
                 var createDelegateMethod = typeof(Delegate).GetMethod("CreateDelegate",
                     new Type[] { typeof(Type), typeof(MethodInfo) });
-                getTypeFromHandle = Expression.Lambda<Func<TypeFromHandleUnsafe>>(
+                return Expression.Lambda<Func<TypeFromHandleUnsafe>>(
                     Expression.Convert(
                         Expression.Call(createDelegateMethod,
                                 Expression.Constant(typeof(TypeFromHandleUnsafe), typeof(Type)),
                                 Expression.Constant(mInfo_GetTypeFromHandleUnsafe, typeof(MethodInfo))),
                         typeof(TypeFromHandleUnsafe))
                     ).Compile();
-            }
-            return getTypeFromHandle();
+            });
+        internal static TypeFromHandleUnsafe GetTypeFromHandleUnsafe() {
+            return getTypeFromHandle.Value();
         }
         //
         static readonly Assembly RuntimeTypeAssembly = typeof(RuntimeTypeHandle).Assembly;
@@ -133,34 +133,34 @@
             null, new[] { typeof(IntPtr), typeof(object) }, null);
         //
         internal delegate MethodBase MethodFromHandles(Type type, IntPtr methodHandle);
-        static Func<Type, IntPtr, MethodBase> getMethodFromHandles = null;
-        internal static MethodFromHandles GetMethodFromHandles() {
-            if(getMethodFromHandles == null) {
+        static readonly Lazy<Func<Type, IntPtr, MethodBase>> getMethodFromHandles =
+            new Lazy<Func<Type, IntPtr, MethodBase>>(() => {
                 var pType = Expression.Parameter(typeof(Type), "type");
                 var pMethodHandle = Expression.Parameter(typeof(IntPtr), "methodHandle");
-                getMethodFromHandles = Expression.Lambda<Func<Type, IntPtr, MethodBase>>(
+                return Expression.Lambda<Func<Type, IntPtr, MethodBase>>(
                                 Expression.Call(mInfo_GetMethodBase,
                                     Expression.Convert(pType, RuntimeTypeType),
                                     Expression.New(ctor_RuntimeMethodHandleInternal, pMethodHandle)),
                                 pType, pMethodHandle
                            ).Compile();
-            }
-            return (type, mHandle) => getMethodFromHandles(type, mHandle);
+            });
+        internal static MethodFromHandles GetMethodFromHandles() {
+            return (type, mHandle) => getMethodFromHandles.Value(type, mHandle);
         }
         internal delegate FieldInfo FieldFromHandles(Type type, IntPtr fieldHandle);
-        static Func<Type, IntPtr, FieldInfo> getFieldFromHandles = null;
-        internal static FieldFromHandles GetFieldFromHandles() {
-            if(getFieldFromHandles == null) {
+        static readonly Lazy<Func<Type, IntPtr, FieldInfo>> getFieldFromHandles =
+            new Lazy<Func<Type, IntPtr, FieldInfo>>(() => {
                 var pType = Expression.Parameter(typeof(Type), "type");
                 var pFieldHandle = Expression.Parameter(typeof(IntPtr), "fieldHandle");
-                getFieldFromHandles = Expression.Lambda<Func<Type, IntPtr, FieldInfo>>(
+                return Expression.Lambda<Func<Type, IntPtr, FieldInfo>>(
                                 Expression.Call(mInfo_GetFieldInfo,
                                     Expression.Convert(pType, RuntimeTypeType),
                                     Expression.New(ctor_RuntimeFieldInfoStub, pFieldHandle, Expression.Constant(null, typeof(object)))),
                                 pType, pFieldHandle
                            ).Compile();
-            }
-            return (type, fHandle) => getFieldFromHandles(type, fHandle);
+            });
+        internal static FieldFromHandles GetFieldFromHandles() {
+            return (type, fHandle) => getFieldFromHandles.Value(type, fHandle);
         }
         //
         static bool? UseRuntimeHelpersPrepareMethod = null;

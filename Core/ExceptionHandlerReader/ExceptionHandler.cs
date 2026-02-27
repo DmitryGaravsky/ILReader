@@ -12,13 +12,13 @@
         Fault = 0x0004,
     }
     public sealed class ExceptionHandler : ISupportDump {
-        public ExceptionHandlerType HandlerType;
+        public readonly ExceptionHandlerType HandlerType;
         public readonly IInstruction TryStart;
         public readonly IInstruction TryEnd;
         public readonly IInstruction FilterStart;
         public readonly IInstruction HandlerStart;
         public readonly IInstruction HandlerEnd;
-        public object CatchType;
+        public readonly object CatchType;
         public ExceptionHandler(Func<int, IInstruction> getInstruction, ExceptionHandlingClause clause) {
             this.HandlerType = (ExceptionHandlerType)(int)clause.Flags;
             this.CatchType = IsCatch ? clause.CatchType : null;
@@ -37,6 +37,15 @@
             this.HandlerStart = getInstruction(offsets[3]);
             this.HandlerEnd = getInstruction(offsets[4]);
         }
+        internal ExceptionHandler(Func<int, IInstruction> getInstruction, RTTypes.DynamicExceptionClause clause) {
+            this.HandlerType = clause.HandlerType;
+            this.CatchType = IsCatch ? (object)clause.CatchType : null;
+            this.TryStart = getInstruction(clause.TryStart);
+            this.TryEnd = getInstruction(clause.TryEnd);
+            this.FilterStart = IsFilter ? getInstruction(clause.FilterStart) : null;
+            this.HandlerStart = getInstruction(clause.HandlerStart);
+            this.HandlerEnd = getInstruction(clause.HandlerEnd);
+        }
         public bool IsCatch {
             get { return (HandlerType & (ExceptionHandlerType.Filter | ExceptionHandlerType.Finally | ExceptionHandlerType.Fault)) == ExceptionHandlerType.Catch; }
         }
@@ -52,7 +61,7 @@
         public ExceptionHandler Advance(IInstruction[] instructions, Action<IInstruction> advance) {
             for(int i = TryStart.Index; i < TryEnd.Index; i++)
                 advance(instructions[i]);
-            for(int i = IsFilter ? FilterStart.Index : HandlerStart.Index; i <= HandlerEnd.Index; i++)
+            for(int i = IsFilter ? FilterStart.Index : HandlerStart.Index; i < HandlerEnd.Index; i++)
                 advance(instructions[i]);
             return this;
         }

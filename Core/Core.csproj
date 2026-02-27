@@ -9,6 +9,7 @@
     <AssemblyName>ILReader.Core</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>False</EmbeddedResourceUseDependentUponConvention>
+    <LangVersion>latest</LangVersion>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -33,8 +34,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="BinaryReader\BinaryReader.cs" />
-    <Compile Include="BinaryReader\IBinaryReader.cs" />
+    <Compile Include="OpCodeReader\ILBytesReader.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\IILReaderConfiguration.cs" />
     <Compile Include="Dump\ILReaderDump.cs" />
@@ -51,7 +51,6 @@
     <Compile Include="OperandReaderContext\OperandReaderContext_Dump.cs" />
     <Compile Include="OperandReaderContext\OperandReaderContext_DynamicMethod.cs" />
     <Compile Include="OperandReaderContext\OperandReaderContext_Real.cs" />
-    <Compile Include="OperandReader\IOperandReader.cs" />
     <Compile Include="OperandReader\OperandReader.cs" />
     <Compile Include="OperandReader\Readers\16bit\InlineVar.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineBrTarget.cs" />
@@ -77,6 +76,7 @@
     <Compile Include="Utils\LazyRef.cs" />
     <Compile Include="Utils\Monads\MayBe.cs" />
     <Compile Include="Utils\RuntimeTypes\RTTypes.cs" />
+    <Compile Include="Utils\RuntimeTypes\RTTypes.DynamicExceptions.cs" />
   </ItemGroup>
 
   <ItemGroup>

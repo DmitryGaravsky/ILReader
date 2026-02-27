@@ -11,7 +11,7 @@ namespace ILReader.Dump {
             // header(type, name.Length, il.Length)
             byte[] header = new byte[sizeof(byte) + sizeof(int) * 2];
             dump.Read(header, 0, header.Length);
-            IBinaryReader headerReader = new Readers.BinaryReader(header);
+            ILBytesReader headerReader = new Readers.ILBytesReader(header);
             Type = (OperandReaderContextType)headerReader.ReadByte();
             byte[] nameBytes = new byte[headerReader.ReadInt()];
             ilBytes = new byte[headerReader.ReadInt()];

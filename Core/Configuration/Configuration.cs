@@ -51,8 +51,8 @@
         protected virtual IILReaderFactory CreateILReaderFactory(MethodBase methodBase) {
             return new ILReaderFactory(methodBase, this);
         }
-        protected virtual IBinaryReader CreateBinaryReader(byte[] bytes) {
-            return new BinaryReader(bytes);
+        protected virtual ILBytesReader CreateILBytesReader(byte[] bytes) {
+            return new ILBytesReader(bytes);
         }
         //
         protected abstract Context.IOperandReaderContext CreateOperandReaderContext(MethodBase methodBase);
@@ -70,8 +70,8 @@
         void IILReaderConfiguration.Reset() {
             ResetReaders();
         }
-        IBinaryReader IILReaderConfiguration.CreateBinaryReader(byte[] bytes) {
-            return CreateBinaryReader(bytes);
+        ILBytesReader IILReaderConfiguration.CreateBytesReader(byte[] bytes) {
+            return CreateILBytesReader(bytes);
         }
         Context.IOperandReaderContext IILReaderConfiguration.CreateOperandReaderContext(MethodBase methodBase) {
             return CreateOperandReaderContext(methodBase);

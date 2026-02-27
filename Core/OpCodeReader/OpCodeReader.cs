@@ -26,11 +26,11 @@
         }
         #endregion Initialization
         const int DoubleByteInstructionPrefix = 0xFE;
-        public static OpCodeInfo ReadOpCode(IBinaryReader binaryReader) {
-            byte instructionOrPrefix = binaryReader.ReadByte();
+        public static OpCodeInfo ReadOpCode(ILBytesReader bytesReader) {
+            byte instructionOrPrefix = bytesReader.ReadByte();
             if(instructionOrPrefix != DoubleByteInstructionPrefix)
                 return singleByteOpCode[instructionOrPrefix];
-            byte instruction = binaryReader.ReadByte();
+            byte instruction = bytesReader.ReadByte();
             return doubleByteOpCode[instruction];
         }
     }
