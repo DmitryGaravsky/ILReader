@@ -26,11 +26,11 @@
     <PackageLicenseFile>LICENSE.TXT</PackageLicenseFile>
     <PackageReadmeFile>README.MD</PackageReadmeFile>
     <PackageOutputPath>..\bin</PackageOutputPath>
-    <FileVersion>1.0.0.5</FileVersion>
-    <AssemblyVersion>1.0.0.5</AssemblyVersion>
-    <PackageReleaseNotes>v1.0.0.5
- - NET8 support + some improvements</PackageReleaseNotes>
-    <Version>1.0.0.5</Version>
+    <FileVersion>1.0.0.6</FileVersion>
+    <AssemblyVersion>1.0.0.6</AssemblyVersion>
+    <PackageReleaseNotes>v1.0.0.6
+ - VS2022 17.14 Support (VSIX)</PackageReleaseNotes>
+    <Version>1.0.0.6</Version>
   </PropertyGroup>
 
   <ItemGroup>

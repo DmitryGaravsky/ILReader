@@ -26,9 +26,6 @@
     <ProjectReference Include="..\Analyzer\Analyzer.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
-    <ProjectReference Include="..\Visualizer\Visualizer.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="Analyzer\Patterns.cs" />
@@ -39,7 +36,6 @@
     <Compile Include="Core\LocalSignatureReader.cs" />
     <Compile Include="Core\OpCodeReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Visualizer\InstructionsWindow.cs" />
   </ItemGroup>
 
  </Project>
