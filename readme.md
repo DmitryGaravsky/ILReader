@@ -35,6 +35,27 @@ foreach(IInstruction instruction in reader) {
 }
 ```
 
+## Assembly-level reading via System.Reflection.Metadata
+
+Read IL from any .NET assembly PE stream without loading it into the CLR:
+
+```cs
+using var stream = File.OpenRead("MyAssembly.dll");
+IILReaderConfiguration cfg = Configuration.ForAssembly(stream);
+
+// by metadata token
+IILReader reader = cfg.GetReader(method.MetadataToken);
+
+// or by type and method name
+IILReader reader = cfg.GetReader("My.Namespace.MyClass", "MyMethod");
+
+foreach(IInstruction instruction in reader) {
+    // operands are IMetadataSymbol — use GetSource<T>() or TryGetSource<T>()
+    if(instruction.Operand is IMetadataSymbol sym)
+        Console.WriteLine($"{instruction.OpCode} {sym.Name} ({sym.Kind})");
+}
+```
+
 ## Visualizer Library (ILReader.Visualizer)
 
 Debugger Visualizer for Visual Studio. 

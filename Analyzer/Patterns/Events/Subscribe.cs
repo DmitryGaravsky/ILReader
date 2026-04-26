@@ -8,8 +8,8 @@
         Subscribe()
             : base(
             i => i.OpCode == OpCodes.Ldftn,
-            i => i.OpCode == OpCodes.Newobj && EventAnalyzer.IsDelegate(i.Operand as ConstructorInfo),
-            i => i.OpCode == OpCodes.Callvirt && EventAnalyzer.IsAddEvent(i.Operand as MethodInfo)) {
+            i => i.OpCode == OpCodes.Newobj && EventAnalyzer.IsDelegate(i.Operand.GetSource<ConstructorInfo>()),
+            i => i.OpCode == OpCodes.Callvirt && EventAnalyzer.IsAddEvent(i.Operand.GetSource<MethodInfo>())) {
         }
     }
 }

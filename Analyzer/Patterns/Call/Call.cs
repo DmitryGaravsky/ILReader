@@ -11,7 +11,7 @@ namespace ILReader.Analyzer {
             get { return Success ? new bool?(Result[0].OpCode == OpCodes.Callvirt) : null; }
         }
         public MethodBase Method {
-            get { return Success ? Result[0].Operand as MethodBase : null; }
+            get { return Success ? Result[0].Operand.GetSource<MethodBase>() : null; }
         }
     }
 }

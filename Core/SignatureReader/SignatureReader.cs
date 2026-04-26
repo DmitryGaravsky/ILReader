@@ -1,8 +1,8 @@
 ﻿namespace ILReader.Readers {
     using System;
-    using System.Linq;
     using System.Collections.Generic;
-
+    using System.Linq;
+    //
     class SignatureReader {
         ILBytesReader bytesReader;
         public SignatureReader(ILBytesReader bytesReader) {
@@ -43,16 +43,16 @@
         }
     }
     sealed class LocalSignatureReader : SignatureReader {
-        LazyRef<LocalVarSig[]> locals;
-        public LocalVarSig[] Locals {
-            get { return locals.Value; }
-        }
+        readonly LazyRef<LocalVarSig[]> locals;
         public LocalSignatureReader(byte[] signature)
             : this(new ILBytesReader(signature)) {
         }
         public LocalSignatureReader(ILBytesReader bytesReader)
             : base(bytesReader) {
             this.locals = new LazyRef<LocalVarSig[]>(() => ParseLocals().ToArray());
+        }
+        public LocalVarSig[] Locals {
+            get { return locals.Value; }
         }
         IEnumerable<LocalVarSig> ParseLocals() {
             int localsSigCode = ReadByte(); //0x07
@@ -103,13 +103,13 @@
                     case ELEMENT_TYPE_CMOD_REQD:
                         if(!ParseCustomMod(ReadByte()))
                             return false;
-                        return false;
+                        continue;   // consume next modifier if present
                     case ELEMENT_TYPE_PINNED:
                         ReadByte();
                         pinned = true;
-                        return false;
+                        return true;   // pinned constraint consumed; continue to parse type
                     default:
-                        return true;
+                        return true;   // non-modifier byte; caller parses the type
                 }
             }
             return true;

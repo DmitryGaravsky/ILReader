@@ -8,8 +8,8 @@
         //
         EnumToStringBoxing()
             : base(
-            i => i.OpCode == OpCodes.Constrained && IsEnum(i.Operand as Type),
-            i => i.OpCode == OpCodes.Callvirt && IsToStringMethod(i.Operand as MethodBase)) {
+            i => i.OpCode == OpCodes.Constrained && IsEnum(i.Operand.GetSource<Type>()),
+            i => i.OpCode == OpCodes.Callvirt && IsToStringMethod(i.Operand.GetSource<MethodBase>())) {
         }
         static bool IsEnum(Type type) {
             return (type != null) && type.IsEnum;

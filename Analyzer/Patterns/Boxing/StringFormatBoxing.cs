@@ -7,7 +7,7 @@
         //
         StringFormatBoxing()
             : base(Box.MatchFunc,
-            i => i.OpCode == OpCodes.Call && IsFormatMethod(i.Operand as MethodBase)) {
+            i => i.OpCode == OpCodes.Call && IsFormatMethod(i.Operand.GetSource<MethodBase>())) {
         }
         static bool IsFormatMethod(MethodBase method) {
             return (method != null) && (method.DeclaringType == typeof(string) && method.Name == "Format");

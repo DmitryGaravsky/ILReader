@@ -11,7 +11,7 @@ namespace ILReader.Analyzer {
         Box() : base(MatchFunc) { }
         //
         static bool IsValueTypeBox(Readers.IInstruction instruction) {
-            return (instruction.OpCode == OpCodes.Box) && IsValueType(instruction.Operand as Type);
+            return (instruction.OpCode == OpCodes.Box) && IsValueType(instruction.Operand.GetSource<Type>());
         }
         static bool IsValueType(Type type) {
             return (type != null) && type.IsValueType;

@@ -1,12 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using ILReader.Readers;
 
 namespace ILReader.Context {
-    sealed class OperandReaderContextDump : IOperandReaderContext {
+    sealed class OperandReaderContext_Dump : IOperandReaderContext {
         readonly Dump.IILReaderDump dump;
         IEnumerator<Tuple<ExceptionHandlerType, string, int[]>> exceptionHandlingClauses;
-        public OperandReaderContextDump(Dump.IILReaderDump dump) {
+        public OperandReaderContext_Dump(Dump.IILReaderDump dump) {
             this.dump = dump;
             this.exceptionHandlingClauses = dump.ExceptionHandlers.GetEnumerator();
         }
@@ -34,18 +34,14 @@ namespace ILReader.Context {
             get { return argument ? dump.Arguments[index] : dump.Variables[index]; }
         }
         // Tokens
-        public object ResolveMethod(int methodToken) {
-            return dump.Methods[methodToken];
-        }
-        public object ResolveField(int fieldToken) {
-            return dump.Fields[fieldToken];
-        }
-        public object ResolveType(int typeToken) {
-            return dump.Types[typeToken];
-        }
-        public object ResolveMember(int memberToken) {
-            return dump.Members[memberToken];
-        }
+        public IMetadataSymbol ResolveMethod(int methodToken) =>
+            new StringSymbol(MetadataSymbolKind.Method, dump.Methods[methodToken]);
+        public IMetadataSymbol ResolveField(int fieldToken) =>
+            new StringSymbol(MetadataSymbolKind.Field, dump.Fields[fieldToken]);
+        public IMetadataSymbol ResolveType(int typeToken) =>
+            new StringSymbol(MetadataSymbolKind.Type, dump.Types[typeToken]);
+        public IMetadataSymbol ResolveMember(int memberToken) =>
+            new StringSymbol(MetadataSymbolKind.Member, dump.Members[memberToken]);
         public string ResolveString(int stringToken) {
             return dump.Strings[stringToken];
         }

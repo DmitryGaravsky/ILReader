@@ -3,7 +3,7 @@
     <ProjectGuid>{2FDE2DC0-F1DC-4090-84CD-58C0204CC63D}</ProjectGuid>
     <EnableDefaultItems>False</EnableDefaultItems>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>net472;net8.0</TargetFrameworks>
+    <TargetFrameworks>net472;netstandard2.0;net8.0</TargetFrameworks>
 
     <RootNamespace>ILReader</RootNamespace>
     <AssemblyName>ILReader.Core</AssemblyName>
@@ -29,11 +29,20 @@
     <FileVersion>1.0.0.6</FileVersion>
     <AssemblyVersion>1.0.0.6</AssemblyVersion>
     <PackageReleaseNotes>v1.0.0.6
- - VS2022 17.14 Support (VSIX)</PackageReleaseNotes>
+ - SRM engine: read IL from any .NET assembly PE stream via Configuration.ForAssembly(Stream)
+ - IMetadataSymbol abstraction: unified typed access to method, field, type, and string operands
+ - IILReaderConfiguration: new GetReader(int metadataToken) and GetReader(typeName, methodName) overloads
+ - Extended test coverage: LocalSignatureReader types, ILBytesReader boundaries, exception handler shapes, numeric literal operands
+ - ARCHITECTURE.md: new architecture documentation
+ - Removed outdated DebuggerVisualizer projects</PackageReleaseNotes>
     <Version>1.0.0.6</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="MetadataSymbol\IMetadataSymbol.cs" />
+    <Compile Include="MetadataSymbol\ReflectionSymbol.cs" />
+    <Compile Include="MetadataSymbol\StringSymbol.cs" />
+    <Compile Include="MetadataSymbol\SrmSymbol.cs" />
     <Compile Include="OpCodeReader\ILBytesReader.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\IILReaderConfiguration.cs" />
@@ -49,8 +58,10 @@
     <Compile Include="OperandReaderContext\IOperandReaderContext.cs" />
     <Compile Include="OperandReaderContext\OperandReaderContext.cs" />
     <Compile Include="OperandReaderContext\OperandReaderContext_Dump.cs" />
+    <Compile Include="OperandReaderContext\OperandReaderContext_Srm.cs" />
     <Compile Include="OperandReaderContext\OperandReaderContext_DynamicMethod.cs" />
     <Compile Include="OperandReaderContext\OperandReaderContext_Real.cs" />
+    <Compile Include="OperandReaderContext\SrmModuleContext.cs" />
     <Compile Include="OperandReader\OperandReader.cs" />
     <Compile Include="OperandReader\Readers\16bit\InlineVar.cs" />
     <Compile Include="OperandReader\Readers\32bit\InlineBrTarget.cs" />
@@ -72,6 +83,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignatureReader\MetadataItem.cs" />
     <Compile Include="SignatureReader\SignatureReader.cs" />
+    <Compile Include="SignatureReader\TypeNameProvider.cs" />
     <Compile Include="Utils\Dump\DumpHelper.cs" />
     <Compile Include="Utils\LazyRef.cs" />
     <Compile Include="Utils\Monads\MayBe.cs" />
@@ -92,5 +104,6 @@
 
   <ItemGroup>
     <PackageReference Include="FastAccessors" />
+    <PackageReference Include="System.Reflection.Metadata" />
   </ItemGroup>
 </Project>

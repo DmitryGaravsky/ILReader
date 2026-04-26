@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.6")]
 [assembly: InternalsVisibleTo("ILReader.Core.Tests")]
 
-#if NETFRAMEWORK
+#if NETFRAMEWORK || NETSTANDARD
 namespace System.Runtime.CompilerServices {
     // IsExternalInit is required by init-only setters and record types (C# 9+).
     // It is part of .NET 5+ but absent from .NET Framework and older targets.

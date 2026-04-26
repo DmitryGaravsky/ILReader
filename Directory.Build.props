@@ -6,7 +6,10 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
     <BaseOutputPath>..\bin.NetFW\</BaseOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net8.0-windows'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <BaseOutputPath>..\bin.NetStd\</BaseOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <BaseOutputPath>..\bin.NET\</BaseOutputPath>
   </PropertyGroup>
 </Project>

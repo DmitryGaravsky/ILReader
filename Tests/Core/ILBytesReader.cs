@@ -70,5 +70,28 @@
             Assert.AreEqual((sbyte)-1, reader.ReadSByte());
             Assert.AreEqual(2, reader.Offset);
         }
+        [Test]
+        public void CanRead_EmptyBuffer_ReturnsFalse() {
+            ILBytesReader reader = new ILBytesReader(new byte[0]);
+            Assert.IsFalse(reader.CanRead());
+        }
+        [Test]
+        public void ReadByte_PastEnd_ThrowsIndexOutOfRange() {
+            ILBytesReader reader = new ILBytesReader(new byte[] { 0x01 });
+            reader.ReadByte();
+            Assert.Throws<System.IndexOutOfRangeException>(() => reader.ReadByte());
+        }
+        [Test]
+        public void Read_WithOffset_ReturnsSubArray() {
+            ILBytesReader reader = new ILBytesReader(bytes);
+            byte[] result = reader.Read(2, 3);
+            Assert.AreEqual(new byte[] { 2, 3, 4 }, result);
+        }
+        [Test]
+        public void Current_AtEnd_ThrowsIndexOutOfRange() {
+            ILBytesReader reader = new ILBytesReader(new byte[] { 0x01 });
+            reader.ReadByte();
+            Assert.Throws<System.IndexOutOfRangeException>(() => { var _ = reader.Current; });
+        }
     }
 }

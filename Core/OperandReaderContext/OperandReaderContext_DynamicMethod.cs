@@ -57,17 +57,17 @@
             get { return OperandReaderContextType.DynamicMethod; }
         }
         #region Resolve
-        public object ResolveMethod(int methodToken) {
-            return GetOrCache(methodTokens, methodToken, t => ResolveMethodCore(t));
+        public IMetadataSymbol ResolveMethod(int methodToken) {
+            return ReflectionSymbol.FromMethod(GetOrCache(methodTokens, methodToken, t => ResolveMethodCore(t)));
         }
-        public object ResolveField(int fieldToken) {
-            return GetOrCache(fieldTokens, fieldToken, t => ResolveFieldCore(t));
+        public IMetadataSymbol ResolveField(int fieldToken) {
+            return ReflectionSymbol.FromField(GetOrCache(fieldTokens, fieldToken, t => ResolveFieldCore(t)));
         }
-        public object ResolveType(int typeToken) {
-            return GetOrCache(typeTokens, typeToken, t => ResolveTypeCore(t));
+        public IMetadataSymbol ResolveType(int typeToken) {
+            return ReflectionSymbol.FromType(GetOrCache(typeTokens, typeToken, t => ResolveTypeCore(t)));
         }
-        public object ResolveMember(int memberToken) {
-            return GetOrCache(memberTokens, memberToken, t => ResolveMemberCore(t));
+        public IMetadataSymbol ResolveMember(int memberToken) {
+            return ReflectionSymbol.FromMember(GetOrCache(memberTokens, memberToken, t => ResolveMemberCore(t)));
         }
         public string ResolveString(int stringToken) {
             return GetOrCache(stringTokens, stringToken, t => resolveString(t));

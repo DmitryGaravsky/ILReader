@@ -30,6 +30,9 @@
   <ItemGroup>
     <Compile Include="Analyzer\Patterns.cs" />
     <Compile Include="Core\BugFixes.cs" />
+    <Compile Include="Core\MetadataSymbolTests.cs" />
+    <Compile Include="Core\ReflectionOperandTests.cs" />
+    <Compile Include="Core\SrmEngineTests.cs" />
     <Compile Include="Core\ILBytesReader.cs" />
     <Compile Include="Core\DynamicMethodExceptions.cs" />
     <Compile Include="Core\ILReader.cs" />

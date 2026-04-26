@@ -7,7 +7,7 @@
         //
         StringConcatBoxing() 
             : base(Box.MatchFunc,
-            i => i.OpCode == OpCodes.Call && IsConcatMethod(i.Operand as MethodBase)) {
+            i => i.OpCode == OpCodes.Call && IsConcatMethod(i.Operand.GetSource<MethodBase>())) {
         }
         static bool IsConcatMethod(MethodBase method) {
             return (method != null) && (method.DeclaringType == typeof(string) && method.Name == "Concat");

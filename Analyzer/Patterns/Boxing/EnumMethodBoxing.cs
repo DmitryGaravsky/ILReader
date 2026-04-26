@@ -8,7 +8,7 @@
         //
         EnumMethodBoxing()
             : base(Box.MatchFunc,
-            i => i.OpCode == OpCodes.Call && IsEnumMethod(i.Operand as MethodBase)) {
+            i => i.OpCode == OpCodes.Call && IsEnumMethod(i.Operand.GetSource<MethodBase>())) {
         }
         static bool IsEnumMethod(MethodBase method) {
             return (method != null) && (method.DeclaringType == typeof(Enum));

@@ -14,6 +14,9 @@
                 new LazyRef<IILReader>(() => InstructionReader.Empty) :
                 new LazyRef<IILReader>(() => CreateInstructionReader(dump, configuration));
         }
+        public ILReaderFactory(ILBytesReader bytesReader, Context.IOperandReaderContext context) {
+            reader = new LazyRef<IILReader>(() => CreateInstructionReader(bytesReader, context));
+        }
         IILReader CreateInstructionReader(MethodBase method, IILReaderConfiguration configuration) {
             var context = configuration.CreateOperandReaderContext(method);
             var bytesReader = configuration.CreateBytesReader(context.GetIL());

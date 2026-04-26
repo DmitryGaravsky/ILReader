@@ -18,7 +18,7 @@ namespace ILReader {
             int HandlerStart,
             int HandlerEnd,
             Type CatchType);    // non-null only for Catch handlers
-        // ── __ExceptionInfo field accessors ─────────────────────────────────────────
+        // __ExceptionInfo field accessors
         const BF NonPublicInstance = BF.Instance | BF.NonPublic;
         static readonly FieldInfo fi_m_exceptions = DynamicResolverType?.GetField("m_exceptions", NonPublicInstance);
         static readonly Type EIType = fi_m_exceptions?.FieldType.GetElementType();

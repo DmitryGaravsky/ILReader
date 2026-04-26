@@ -49,17 +49,17 @@
             get { return OperandReaderContextType.Method; }
         }
         #region Resolve
-        public object ResolveMethod(int methodToken) {
-            return GetOrCache(methodTokens, methodToken, t => module.ResolveMethod(t, typeArguments, methodArguments));
+        public IMetadataSymbol ResolveMethod(int methodToken) {
+            return ReflectionSymbol.FromMethod(GetOrCache(methodTokens, methodToken, t => module.ResolveMethod(t, typeArguments, methodArguments)));
         }
-        public object ResolveField(int fieldToken) {
-            return GetOrCache(fieldTokens, fieldToken, t => module.ResolveField(t, typeArguments, methodArguments));
+        public IMetadataSymbol ResolveField(int fieldToken) {
+            return ReflectionSymbol.FromField(GetOrCache(fieldTokens, fieldToken, t => module.ResolveField(t, typeArguments, methodArguments)));
         }
-        public object ResolveType(int typeToken) {
-            return GetOrCache(typeTokens, typeToken, t => module.ResolveType(t, typeArguments, methodArguments));
+        public IMetadataSymbol ResolveType(int typeToken) {
+            return ReflectionSymbol.FromType(GetOrCache(typeTokens, typeToken, t => module.ResolveType(t, typeArguments, methodArguments)));
         }
-        public object ResolveMember(int memberToken) {
-            return GetOrCache(memberTokens, memberToken, t => module.ResolveMember(t, typeArguments, methodArguments));
+        public IMetadataSymbol ResolveMember(int memberToken) {
+            return ReflectionSymbol.FromMember(GetOrCache(memberTokens, memberToken, t => module.ResolveMember(t, typeArguments, methodArguments)));
         }
         public string ResolveString(int stringToken) {
             return GetOrCache(stringTokens, stringToken, t => module.ResolveString(t));
